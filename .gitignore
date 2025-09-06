@@ -63,6 +63,7 @@ docs/mkdocs_content/typedoc/
 
 # TypeScript output
 tsp-output/
+dist/
 
 # Generated TypeScript declaration files
 generated/
