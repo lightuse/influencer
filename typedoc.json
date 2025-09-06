@@ -1,0 +1,10 @@
+{
+  "$schema": "https://typedoc.org/schema.json",
+  "entryPoints": ["src/**/*.ts"],
+  "out": "docs/mkdocs_content/typedoc",
+  "readme": "README.md",
+  "name": "Influencer API Documentation",
+  "excludePrivate": true,
+  "excludeProtected": true,
+  "tsconfig": "tsconfig.json"
+}

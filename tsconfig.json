@@ -1,0 +1,44 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "NodeNext",
+    "moduleResolution": "nodenext",
+    "strict": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": false,
+    "outDir": "./dist",
+    "rootDir": "./",
+    "allowImportingTsExtensions": false,
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "types": ["node", "vitest/globals"],
+    "lib": ["ES2022"],
+    "baseUrl": ".",
+    "paths": {
+      "@src/*": ["src/*"],
+      "@application/*": ["src/application/*"],
+      "@domain/*": ["src/domain/*"],
+      "@infrastructure/*": ["src/infrastructure/*"],
+      "@presentation/*": ["src/presentation/*"]
+    }
+  },
+  "include": [
+    "src/**/*",
+    "generated/**/*",
+    "scripts/**/*.ts",
+    "tests/**/*.ts",
+    "cli/**/*.ts"
+  ],
+  "exclude": ["node_modules", "dist", "tsp-output"],
+  "ts-node": {
+    "esm": true
+  }
+}
