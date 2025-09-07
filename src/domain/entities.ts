@@ -31,9 +31,9 @@ export interface InfluencerStats {
   /** インフルエンサーID */
   influencerId: number;
   /** 平均いいね数 */
-  avgLikes: string;
+  avgLikes: number;
   /** 平均コメント数 */
-  avgComments: string;
+  avgComments: number;
   /** 投稿件数 */
   postCount: number;
 }
@@ -45,9 +45,9 @@ export interface TopInfluencer {
   /** インフルエンサーID */
   influencerId: number;
   /** 平均いいね数 */
-  avgLikes?: string;
+  avgLikes?: number;
   /** 平均コメント数 */
-  avgComments?: string;
+  avgComments?: number;
   /** 投稿件数 */
   postCount: number;
 }
