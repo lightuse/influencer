@@ -64,6 +64,7 @@ async function importCSV() {
   const batchSize = 1000;
 
   // CSVストリームを非同期イテレータで処理
+  const CSV_STREAM_POLL_INTERVAL_MS = 10; // ポーリング間隔（ミリ秒）
   async function* csvRowGenerator(filePath: string): AsyncGenerator<CSVRow> {
     const stream = fs.createReadStream(filePath).pipe(csvParser());
     const queue: CSVRow[] = [];
@@ -83,7 +84,7 @@ async function importCSV() {
       if (queue.length > 0) {
         yield queue.shift()!;
       } else {
-        await new Promise(res => setTimeout(res, 10));
+        await new Promise(res => setTimeout(res, CSV_STREAM_POLL_INTERVAL_MS));
       }
     }
   }
@@ -100,7 +101,7 @@ async function importCSV() {
       } catch {
         postId = null;
       }
-      const influencerId = parseInt(row.influencer_id);
+      const influencerId = parseInt(row.influencer_id, 10);
       if (
         Number.isInteger(influencerId) &&
         influencerId > 0 &&
@@ -110,8 +111,8 @@ async function importCSV() {
           influencerId,
           postId,
           shortcode: row.shortcode || null,
-          likes: parseInt(row.likes) || 0,
-          comments: parseInt(row.comments) || 0,
+          likes: parseInt(row.likes, 10) || 0,
+          comments: parseInt(row.comments, 10) || 0,
           thumbnail: row.thumbnail || null,
           text: row.text || null,
           postDate: row.post_date ? new Date(row.post_date) : null,
@@ -203,16 +204,8 @@ async function processBatch(
 }
 
 // メイン実行部
-// Node.jsで直接実行された場合のみメイン処理を実行
-const isMain =
-  typeof require !== 'undefined'
-    ? require.main === module
-    : import.meta.url ===
-      (process?.argv?.[1]?.startsWith('file://')
-        ? process.argv[1]
-        : `file://${process.argv[1]}`);
-
-if (isMain) {
+// Node.jsで直接実行された場合のみメイン処理を実行（ESM用のシンプルな判定）
+if (import.meta.url === `file://${process.argv[1]}`) {
   importCSV()
     .then(() => {
       if (DEBUG) {
