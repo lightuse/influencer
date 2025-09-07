@@ -10,7 +10,7 @@ datasource db {
 model InfluencerPost {
   id           Int      @id @default(autoincrement())
   influencerId Int      @map("influencer_id")
-  postId       BigInt   @unique @map("post_id")
+  postId       String   @unique @map("post_id")
   shortcode    String?  @db.VarChar(255)
   likes        Int      @default(0)
   comments     Int      @default(0)

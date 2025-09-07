@@ -7,7 +7,7 @@ export interface InfluencerPost {
   /** インフルエンサーID */
   influencerId: number;
   /** 投稿ID（SNS側のID） */
-  postId: bigint;
+  postId: string;
   /** 投稿のショートコード */
   shortcode?: string;
   /** いいね数 */

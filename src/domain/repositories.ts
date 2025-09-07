@@ -56,5 +56,5 @@ export interface InfluencerPostRepository {
    * @param postId 投稿ID
    * @returns 存在すればtrue
    */
-  exists(postId: bigint): Promise<boolean>;
+  exists(postId: string): Promise<boolean>;
 }
