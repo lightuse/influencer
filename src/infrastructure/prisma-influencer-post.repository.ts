@@ -101,8 +101,8 @@ export class PrismaInfluencerPostRepository
 
     return {
       influencerId,
-      avgLikes: result._avg.likes || 0,
-      avgComments: result._avg.comments || 0,
+      avgLikes: result._avg.likes?.toNumber() ?? 0,
+      avgComments: result._avg.comments?.toNumber() ?? 0,
       postCount: result._count,
     };
   }
