@@ -6,6 +6,9 @@ import path from 'path';
 import csvParser from 'csv-parser';
 import dotenv from 'dotenv';
 
+// .envファイルから環境変数を読み込む
+dotenv.config();
+
 // 失敗したバッチのログファイルパスを設定（環境変数で指定可能。デフォルトは logs/import_failed_batches.log）
 const failedBatchLogPath =
   process.env.FAILED_BATCH_LOG_PATH ||
@@ -16,9 +19,6 @@ if (!fs.existsSync(failedBatchLogDir)) {
 }
 // DEBUG=1 でデバッグログを有効化
 const DEBUG = process.env.DEBUG === '1';
-
-// .envファイルから環境変数を読み込む
-dotenv.config();
 
 interface CSVRow {
   influencer_id: string;
@@ -64,7 +64,7 @@ async function importCSV() {
   const batchSize = 1000;
 
   // CSVストリームを非同期イテレータで処理
-  const CSV_STREAM_POLL_INTERVAL_MS = 10; // ポーリング間隔（ミリ秒）
+  const CSV_STREAM_POLL_INTERVAL_MS = 50; // ポーリング間隔（ミリ秒）
   async function* csvRowGenerator(filePath: string): AsyncGenerator<CSVRow> {
     const stream = fs.createReadStream(filePath).pipe(csvParser());
     const queue: CSVRow[] = [];
@@ -167,7 +167,7 @@ async function importCSV() {
   console.log(`✅ インポート成功件数: ${totalImported}`);
   console.log(`❌ エラー件数: ${totalErrors}`);
   console.log(
-    `📊 成功率: ${totalProcessed > 0 ? ((totalImported / totalProcessed) * 100).toFixed(2) : '0.00'}%`
+    `📊 成功率: ${totalProcessed - totalErrors > 0 ? ((totalImported / (totalProcessed - totalErrors)) * 100).toFixed(2) : '0.00'}%`
   );
 
   await prisma.$disconnect();
