@@ -32,7 +32,7 @@ class MockPrisma {
             {
               id: 1,
               influencerId: where.influencerId,
-              postId: BigInt(1),
+              postId: '1',
               likes: 10,
               comments: 2,
               createdAt: new Date(),
@@ -42,7 +42,13 @@ class MockPrisma {
     // 統計情報取得のモック
     aggregate: async ({ where }: AggregateArgs) => {
       if (where.influencerId === 1) {
-        return { _avg: { likes: 10, comments: 2 }, _count: 1 };
+        return {
+          _avg: {
+            likes: { toNumber: () => 10 },
+            comments: { toNumber: () => 2 },
+          },
+          _count: 1,
+        };
       }
       return { _avg: { likes: 0, comments: 0 }, _count: 0 };
     },
@@ -67,7 +73,7 @@ class MockPrisma {
     createMany: async ({ data }: CreateManyArgs) => ({ count: data.length }),
     // 投稿IDでユニーク検索のモック
     findUnique: async ({ where }: FindUniqueArgs) =>
-      where.postId === BigInt(1) ? { id: 1 } : null,
+      where.postId === '1' ? { id: 1 } : null,
   };
 }
 
@@ -84,7 +90,7 @@ describe('PrismaInfluencerPostRepository', () => {
   it('should create a post', async () => {
     const post = await repo.create({
       influencerId: 1,
-      postId: BigInt(1),
+      postId: '1',
       likes: 10,
       comments: 2,
     });
@@ -103,7 +109,7 @@ describe('PrismaInfluencerPostRepository', () => {
   it('should get influencer stats', async () => {
     const stats = await repo.getInfluencerStats(1);
     expect(stats).toBeTruthy();
-    expect(stats?.avgLikes).toBe('10.00');
+    expect(stats?.avgLikes).toBe(10);
   });
 
   // 投稿がない場合はnullを返すこと
@@ -116,38 +122,38 @@ describe('PrismaInfluencerPostRepository', () => {
   it('should get top influencers by likes', async () => {
     const top = await repo.getTopInfluencersByLikes(1);
     expect(top.length).toBe(1);
-    expect(top[0].avgLikes).toBe('10.00');
+    expect(top[0].avgLikes).toBe(10);
   });
 
   // コメント数でトップインフルエンサーを取得できること
   it('should get top influencers by comments', async () => {
     const top = await repo.getTopInfluencersByComments(1);
     expect(top.length).toBe(1);
-    expect(top[0].avgComments).toBe('2.00');
+    expect(top[0].avgComments).toBe(2);
   });
 
   // 複数投稿を一括作成できること
   it('should bulk create posts', async () => {
     const count = await repo.bulkCreate([
-      { influencerId: 1, postId: BigInt(1), likes: 10, comments: 2 },
+      { influencerId: 1, postId: '1', likes: 10, comments: 2 },
     ]);
     expect(count).toBe(1);
   });
 
   // 投稿の存在確認ができること
   it('should check if post exists', async () => {
-    const exists = await repo.exists(BigInt(1));
+    const exists = await repo.exists('1');
     expect(exists).toBe(true);
-    const notExists = await repo.exists(BigInt(999));
+    const notExists = await repo.exists('999');
     expect(notExists).toBe(false);
   });
 
   // コメント数がnullの場合も0.00として扱うこと
   it('should handle null avgComments when getting top influencers by comments', async () => {
-    const top = await repo.getTopInfluencersByComments(2); // Requesting 2 to get both mocked influencers
+    const top = await repo.getTopInfluencersByComments(2); // Get top 2 to include the one with null comments
     expect(top.length).toBe(2);
     const influencerWithNullComments = top.find(i => i.influencerId === 999);
     expect(influencerWithNullComments).toBeTruthy();
-    expect(influencerWithNullComments?.avgComments).toBe('0.00');
+    expect(influencerWithNullComments?.avgComments).toBe(0);
   });
 });

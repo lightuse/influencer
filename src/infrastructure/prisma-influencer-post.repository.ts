@@ -170,16 +170,7 @@ export class PrismaInfluencerPostRepository
     posts: Omit<InfluencerPost, 'id' | 'createdAt'>[]
   ): Promise<number> {
     const result = await this.prisma.influencerPost.createMany({
-      data: posts.map(post => ({
-        influencerId: post.influencerId,
-        postId: post.postId,
-        shortcode: post.shortcode,
-        likes: post.likes,
-        comments: post.comments,
-        thumbnail: post.thumbnail,
-        text: post.text,
-        postDate: post.postDate,
-      })),
+      data: posts,
       skipDuplicates: true,
     });
 
