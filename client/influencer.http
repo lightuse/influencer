@@ -1,0 +1,62 @@
+### REST Client for Influencer Posts Analysis API
+### ベースURL: http://localhost:3000
+@baseUrl = http://localhost:3000
+
+### ルートAPI情報取得
+GET {{baseUrl}}/
+
+### APIドキュメント取得
+GET {{baseUrl}}/api/docs
+
+### ヘルスチェック
+GET {{baseUrl}}/api/health
+
+### 1. インフルエンサー統計情報取得
+### 特定インフルエンサーの平均いいね数・コメント数・投稿数を返す
+GET {{baseUrl}}/api/influencers/1/stats
+
+### 2. いいね数上位インフルエンサー取得
+### 平均いいね数で上位N人のインフルエンサーを返す
+GET {{baseUrl}}/api/influencers/top/likes?limit=5
+
+### 3. コメント数上位インフルエンサー取得
+### 平均コメント数で上位N人のインフルエンサーを返す
+GET {{baseUrl}}/api/influencers/top/comments?limit=5
+
+### 4. インフルエンサーの名詞分析
+### インフルエンサーの投稿テキストから抽出した上位N個の名詞を返す
+GET {{baseUrl}}/api/influencers/1/nouns?limit=10
+
+### 5. インポートステータス確認
+### CSVインポート機能の状態と利用可否を返す
+GET {{baseUrl}}/api/import/status
+
+### 6. CSVファイルインポート
+### インフルエンサー投稿データのCSVファイルをアップロード・インポート
+POST {{baseUrl}}/api/import/csv
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
+
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="csvFile"; filename="t_influencer_posts_202401121334.csv"
+Content-Type: text/csv
+
+< ./data/t_influencer_posts_202401121334.csv
+------WebKitFormBoundary7MA4YWxkTrZu0gW--
+
+### 参考: シンプルなフォームアップロード（上記が動作しない場合）
+# POST {{baseUrl}}/api/import/csv
+# Content-Type: multipart/form-data
+#
+# --form csvFile=@data/t_influencer_posts_202401121334.csv
+
+### 別のインフルエンサーIDでテスト
+GET {{baseUrl}}/api/influencers/71/stats
+
+### limit値を変えてテスト
+GET {{baseUrl}}/api/influencers/top/likes?limit=10
+
+### エラーケーステスト - 無効なインフルエンサーID
+GET {{baseUrl}}/api/influencers/invalid/stats
+
+### エラーケーステスト - 存在しないインフルエンサー
+GET {{baseUrl}}/api/influencers/999999/stats
