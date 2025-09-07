@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import { PrismaClient } from '@prisma/client';
+import { Prisma, PrismaClient } from '@prisma/client';
 import fs from 'fs';
 import path from 'path';
 
@@ -23,13 +23,23 @@ interface CSVRow {
   post_date?: string;
 }
 
+/**
+ * CSVファイルをインポートする
+ * 1. ストリームのバックプレッシャー問題を回避するため、全行を一度配列に読み込んでから逐次バッチ処理
+ * 2. Promiseコンストラクタのアンチパターンを排除し、async/awaitのみで完結
+ * 3. バッチ失敗時は該当バッチをファイルに保存し、データ損失を防止
+ * 4. postIdのバリデーションをBigInt変換前の文字列チェック＋例外キャッチで安全に
+ *
+ * @returns void
+ */
 async function importCSV() {
   const prisma = new PrismaClient();
-  const csvFilePath = path.join(
-    process.cwd(),
-    'data',
-    't_influencer_posts_202401121334.csv'
-  );
+  // コマンドライン引数からCSVファイルパスを取得（なければ.envのCSV_FILENAME、さらに無ければデフォルト）
+  const csvArg = process.argv[2];
+  const envCsvFile =
+    process.env.CSV_FILENAME || 't_influencer_posts_202401121334.csv';
+  const defaultCsvPath = path.join(process.cwd(), 'data', envCsvFile);
+  const csvFilePath = csvArg ? path.resolve(csvArg) : defaultCsvPath;
 
   if (!fs.existsSync(csvFilePath)) {
     console.error(`❌ CSV file not found: ${csvFilePath}`);
@@ -42,98 +52,101 @@ async function importCSV() {
   let totalImported = 0;
   let totalErrors = 0;
   const batchSize = 1000;
-  // eslint-disable-next-line prefer-const
-  let batch: any[] = [];
 
-  return new Promise<void>((resolve, reject) => {
+  // 全行を一度配列に読み込む
+  const rows: Prisma.InfluencerPostCreateManyInput[] = [];
+  await new Promise<void>((resolve, reject) => {
     fs.createReadStream(csvFilePath)
       .pipe(csvParser())
-      .on('data', async (row: CSVRow) => {
-        totalProcessed++;
-
+      .on('data', (row: CSVRow) => {
         try {
-          // データ変換とバリデーション
-          const post = {
-            influencerId: parseInt(row.influencer_id),
-            postId: BigInt(row.post_id),
-            shortcode: row.shortcode || null,
-            likes: parseInt(row.likes) || 0,
-            comments: parseInt(row.comments) || 0,
-            thumbnail: row.thumbnail || null,
-            text: row.text || null,
-            postDate: row.post_date ? new Date(row.post_date) : null,
-          };
-
-          if (isNaN(post.influencerId) || !post.postId) {
-            totalErrors++;
-            return;
+          // postIdのバリデーションをBigInt変換前の文字列チェック＋例外キャッチで安全に
+          let postId: bigint | null = null;
+          try {
+            if (row.post_id && row.post_id.trim() !== '') {
+              postId = BigInt(row.post_id);
+            }
+          } catch (e) {
+            postId = null;
           }
-
-          batch.push(post);
-
-          // バッチ処理
-          if (batch.length >= batchSize) {
-            await processBatch(prisma, batch.splice(0, batchSize))
-              .then(imported => {
-                totalImported += imported;
-                console.log(
-                  `✅ Processed ${totalProcessed} rows, imported ${totalImported}, errors: ${totalErrors}`
-                );
-              })
-              .catch(error => {
-                console.error('Batch processing error:', error);
-                totalErrors += batchSize;
-              });
+          const influencerId = parseInt(row.influencer_id);
+          if (!isNaN(influencerId) && postId !== null) {
+            const post = {
+              influencerId,
+              postId,
+              shortcode: row.shortcode || null,
+              likes: parseInt(row.likes) || 0,
+              comments: parseInt(row.comments) || 0,
+              thumbnail: row.thumbnail || null,
+              text: row.text || null,
+              postDate: row.post_date ? new Date(row.post_date) : null,
+            };
+            rows.push(post);
+          } else {
+            totalErrors++;
           }
         } catch (error) {
           totalErrors++;
-          console.error('Row processing error:', error);
         }
       })
-      .on('end', async () => {
-        try {
-          // 残りのバッチを処理
-          if (batch.length > 0) {
-            const imported = await processBatch(prisma, batch);
-            totalImported += imported;
-          }
-
-          console.log('\n🎉 CSV import completed!');
-          console.log(`📈 Total processed: ${totalProcessed}`);
-          console.log(`✅ Total imported: ${totalImported}`);
-          console.log(`❌ Total errors: ${totalErrors}`);
-          console.log(
-            `📊 Success rate: ${((totalImported / totalProcessed) * 100).toFixed(2)}%`
-          );
-
-          await prisma.$disconnect();
-          resolve();
-        } catch (error) {
-          console.error('Final processing error:', error);
-          await prisma.$disconnect();
-          reject(error);
-        }
-      })
-      .on('error', async error => {
-        console.error('CSV parsing error:', error);
-        await prisma.$disconnect();
-        reject(error);
-      });
+      .on('end', () => resolve())
+      .on('error', err => reject(err));
   });
+
+  totalProcessed = rows.length + totalErrors;
+
+  // バッチごとに逐次awaitで処理
+  for (let i = 0; i < rows.length; i += batchSize) {
+    const batch = rows.slice(i, i + batchSize);
+    try {
+      // バックプレッシャー回避＆Promiseアンチパターン排除、逐次awaitでバッチ処理
+      const imported = await processBatch(prisma, batch);
+      totalImported += imported;
+      console.log(
+        `✅ Processed ${Math.min(i + batch.length, rows.length)}/${rows.length}, imported ${totalImported}, errors: ${totalErrors}`
+      );
+    } catch (error) {
+      totalErrors += batch.length;
+      console.error('Batch processing error:', error);
+      // バッチ失敗時は該当バッチをファイルに保存し、データ損失を防止
+      fs.appendFileSync(
+        'import_failed_batches.log',
+        JSON.stringify(batch) + '\n'
+      );
+    }
+  }
+
+  console.log('\n🎉 CSV import completed!');
+  console.log(`📈 Total processed: ${totalProcessed}`);
+  console.log(`✅ Total imported: ${totalImported}`);
+  console.log(`❌ Total errors: ${totalErrors}`);
+  console.log(
+    `📊 Success rate: ${((totalImported / totalProcessed) * 100).toFixed(2)}%`
+  );
+
+  await prisma.$disconnect();
 }
 
 async function processBatch(
   prisma: PrismaClient,
-  posts: any[]
+  posts: Prisma.InfluencerPostCreateManyInput[]
 ): Promise<number> {
   try {
     const result = await prisma.influencerPost.createMany({
       data: posts,
       skipDuplicates: true,
     });
+    console.log('[DEBUG] createMany result:', result);
     return result.count;
   } catch (error) {
     console.error('Database batch insert error:', error);
+    if (error instanceof Error) {
+      console.error('[DEBUG] error.message:', error.message);
+      if ('meta' in error) {
+        // PrismaClientKnownRequestError など
+        console.error('[DEBUG] error.meta:', error.meta);
+      }
+    }
     throw error;
   }
 }
