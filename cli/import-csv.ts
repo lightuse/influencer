@@ -1,4 +1,10 @@
 #!/usr/bin/env node
+import { Prisma, PrismaClient } from '@prisma/client';
+import fs from 'fs';
+import path from 'path';
+
+import csvParser from 'csv-parser';
+import dotenv from 'dotenv';
 
 // 失敗したバッチのログファイルパスを設定（環境変数で指定可能。デフォルトは logs/import_failed_batches.log）
 const failedBatchLogPath =
@@ -11,12 +17,6 @@ if (!fs.existsSync(failedBatchLogDir)) {
 // DEBUG=1 でデバッグログを有効化
 const DEBUG = process.env.DEBUG === '1';
 
-import { Prisma, PrismaClient } from '@prisma/client';
-import fs from 'fs';
-import path from 'path';
-
-import csvParser from 'csv-parser';
-import dotenv from 'dotenv';
 // .envファイルから環境変数を読み込む
 dotenv.config();
 
@@ -68,13 +68,12 @@ async function importCSV() {
     const stream = fs.createReadStream(filePath).pipe(csvParser());
     const queue: CSVRow[] = [];
     let done = false;
-    let error: any = null;
-
+    let error: Error | null = null;
     stream.on('data', (row: CSVRow) => queue.push(row));
     stream.on('end', () => {
       done = true;
     });
-    stream.on('error', (err: any) => {
+    stream.on('error', (err: Error) => {
       error = err;
       done = true;
     });
@@ -102,7 +101,11 @@ async function importCSV() {
         postId = null;
       }
       const influencerId = parseInt(row.influencer_id);
-      if (!isNaN(influencerId) && postId !== null) {
+      if (
+        Number.isInteger(influencerId) &&
+        influencerId > 0 &&
+        postId !== null
+      ) {
         const post = {
           influencerId,
           postId,
@@ -163,7 +166,7 @@ async function importCSV() {
   console.log(`✅ インポート成功件数: ${totalImported}`);
   console.log(`❌ エラー件数: ${totalErrors}`);
   console.log(
-    `📊 成功率: ${((totalImported / totalProcessed) * 100).toFixed(2)}%`
+    `📊 成功率: ${totalProcessed > 0 ? ((totalImported / totalProcessed) * 100).toFixed(2) : '0.00'}%`
   );
 
   await prisma.$disconnect();
@@ -200,7 +203,16 @@ async function processBatch(
 }
 
 // メイン実行部
-if (import.meta.url === `file://${process.argv[1]}`) {
+// Node.jsで直接実行された場合のみメイン処理を実行
+const isMain =
+  typeof require !== 'undefined'
+    ? require.main === module
+    : import.meta.url ===
+      (process?.argv?.[1]?.startsWith('file://')
+        ? process.argv[1]
+        : `file://${process.argv[1]}`);
+
+if (isMain) {
   importCSV()
     .then(() => {
       if (DEBUG) {
