@@ -1,0 +1,27 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model InfluencerPost {
+  id           Int      @id @default(autoincrement())
+  influencerId Int      @map("influencer_id")
+  postId       BigInt   @unique @map("post_id")
+  shortcode    String?  @db.VarChar(255)
+  likes        Int      @default(0)
+  comments     Int      @default(0)
+  thumbnail    String?  @db.Text
+  text         String?  @db.Text
+  postDate     DateTime? @map("post_date")
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  @@index([influencerId], map: "idx_influencer_posts_influencer_id")
+  @@index([likes], map: "idx_influencer_posts_likes")
+  @@index([comments], map: "idx_influencer_posts_comments")
+  @@index([postDate], map: "idx_influencer_posts_post_date")
+  @@map("influencer_posts")
+}
