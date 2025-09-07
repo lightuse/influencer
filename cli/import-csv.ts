@@ -167,7 +167,7 @@ async function importCSV() {
   console.log(`✅ インポート成功件数: ${totalImported}`);
   console.log(`❌ エラー件数: ${totalErrors}`);
   console.log(
-    `📊 成功率: ${totalProcessed - totalErrors > 0 ? ((totalImported / (totalProcessed - totalErrors)) * 100).toFixed(2) : '0.00'}%`
+    `📊 成功率: ${totalProcessed > 0 ? ((totalImported / totalProcessed) * 100).toFixed(2) : '0.00'}%`
   );
 
   await prisma.$disconnect();
