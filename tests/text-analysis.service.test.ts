@@ -53,7 +53,7 @@ const sampleTexts = ['猫が好きです。犬も好きです。', '猫と犬が
 describe('TextAnalysisService', () => {
   let service: TextAnalysisService;
 
-  beforeEach(async () => {
+  beforeEach(() => {
     service = new TextAnalysisService();
     // 各テストでサービスを初期化
   });

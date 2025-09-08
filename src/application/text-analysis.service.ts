@@ -2,33 +2,18 @@ import { NounCount } from '../domain/entities.js';
 import kuromoji from 'kuromoji';
 
 /**
- * Kuromojiのトークン情報。
- */
-interface KuromojiToken {
-  /** 表層形（実際の文字列） */
-  surface_form: string;
-  /** 品詞 */
-  pos: string;
-}
-
-/**
- * Kuromojiのトークナイザーインターフェース。
- */
-interface KuromojiTokenizer {
-  /**
-   * テキストをトークン配列に分割する。
-   * @param text 分析対象テキスト
-   */
-  tokenize(text: string): KuromojiToken[];
-}
-
-/**
  * テキスト分析（名詞抽出）サービス。
  * Kuromojiを用いて日本語テキストから名詞を抽出します。
  */
 export class TextAnalysisService {
+  /** 名詞フィルタ用の品詞名 */
+  static readonly NOUN_POS = '名詞';
+  /** 名詞の最小長さ */
+  static readonly MIN_NOUN_LENGTH = 2;
   /** Kuromojiトークナイザーインスタンス */
-  private tokenizer: KuromojiTokenizer | null = null;
+  private tokenizer: import('kuromoji').Tokenizer | null = null;
+  /** 初期化処理のPromise（競合防止用） */
+  private initializingPromise: Promise<void> | null = null;
 
   /**
    * Kuromojiトークナイザーを初期化します。
@@ -36,19 +21,25 @@ export class TextAnalysisService {
    */
   async initialize(): Promise<void> {
     if (this.tokenizer) return;
-
-    return new Promise((resolve, reject) => {
+    if (this.initializingPromise) {
+      await this.initializingPromise;
+      return;
+    }
+    this.initializingPromise = new Promise((resolve, reject) => {
       kuromoji
         .builder({ dicPath: 'node_modules/kuromoji/dict' })
-        .build((err: Error | null, tokenizer: KuromojiTokenizer) => {
+        .build((err: Error | null, tokenizer: import('kuromoji').Tokenizer) => {
           if (err) {
+            this.initializingPromise = null;
             reject(err);
           } else {
             this.tokenizer = tokenizer;
+            this.initializingPromise = null;
             resolve();
           }
         });
     });
+    await this.initializingPromise;
   }
 
   /**
@@ -68,8 +59,11 @@ export class TextAnalysisService {
 
       const tokens = this.tokenizer.tokenize(text);
       for (const token of tokens) {
-        // 名詞のみを抽出（品詞が名詞で、長さが2文字以上のもの）
-        if (token.pos === '名詞' && token.surface_form.length >= 2) {
+        // 名詞のみを抽出（品詞が名詞で、長さがMIN_NOUN_LENGTH文字以上のもの）
+        if (
+          token.pos === TextAnalysisService.NOUN_POS &&
+          token.surface_form.length >= TextAnalysisService.MIN_NOUN_LENGTH
+        ) {
           const noun = token.surface_form;
           nounCounts.set(noun, (nounCounts.get(noun) || 0) + 1);
         }

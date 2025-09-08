@@ -23,7 +23,7 @@ interface CSVRow {
  */
 interface PostData {
   influencerId: number;
-  postId: bigint;
+  postId: string;
   shortcode?: string;
   likes: number;
   comments: number;
@@ -37,6 +37,8 @@ interface PostData {
  * ファイルをストリームとして読み込み、バッチ処理でデータベースに保存します。
  */
 export class ImportService {
+  // バッチサイズをクラス定数として定義
+  static readonly BATCH_SIZE = 1000;
   /**
    * ImportServiceのインスタンスを生成します。
    * @param repository 投稿データを永続化するためのリポジトリ
@@ -61,18 +63,31 @@ export class ImportService {
 
     const stream = Readable.from(fileBuffer).pipe(csvParser());
     let posts: PostData[] = [];
-    const BATCH_SIZE = 1000;
 
     try {
       for await (const row of stream) {
+        // Skip empty rows (all values empty or undefined)
+        if (
+          !row ||
+          Object.values(row).every(v => v === '' || v === undefined)
+        ) {
+          continue;
+        }
+        // Optionally, skip header row if csv-parser emits it (shouldn't, but just in case)
+        if (
+          row.influencer_id === 'influencer_id' &&
+          row.post_id === 'post_id'
+        ) {
+          continue;
+        }
         results.totalProcessed++;
         try {
           const post = this.transformRowToPost(row as CSVRow);
           posts.push(post);
 
-          if (posts.length >= BATCH_SIZE) {
+          if (posts.length >= ImportService.BATCH_SIZE) {
             await this.processBatch(posts, results);
-            posts = []; // Clear the batch array
+            posts = [];
           }
         } catch (error) {
           results.totalErrors++;
@@ -105,7 +120,7 @@ export class ImportService {
   private transformRowToPost(row: CSVRow): PostData {
     const post: PostData = {
       influencerId: parseInt(row.influencer_id, 10),
-      postId: BigInt(row.post_id),
+      postId: row.post_id ? row.post_id.toString() : '',
       shortcode: row.shortcode || undefined,
       likes: parseInt(row.likes, 10) || 0,
       comments: parseInt(row.comments, 10) || 0,
@@ -133,9 +148,19 @@ export class ImportService {
     results: ImportResult
   ): Promise<void> {
     try {
-      const imported = await this.repository.bulkCreate(posts);
-      results.totalImported += imported;
-      console.log(`Successfully imported a batch of ${imported} posts.`);
+      // The repository expects Omit<InfluencerPost, 'id' | 'createdAt'>[]
+      const bulkResult = await this.repository.bulkCreate(posts as any);
+
+      if (bulkResult && Array.isArray(bulkResult.created)) {
+        const createdCount = bulkResult.created.length;
+        results.totalImported += createdCount;
+        if (createdCount > 0) {
+          console.log(`Successfully imported a batch of ${createdCount} posts.`);
+        }
+      } else {
+        // The repository returned an unexpected value
+        throw new Error('bulkCreate did not return created posts array.');
+      }
     } catch (error) {
       console.error(`Failed to import batch of ${posts.length} posts.`, error);
       results.totalErrors += posts.length;
@@ -152,7 +177,7 @@ export class ImportService {
       capabilities: {
         maxFileSize: '50MB',
         supportedFormats: ['csv'],
-        batchSize: 1000,
+        batchSize: ImportService.BATCH_SIZE,
         requiredColumns: [
           'influencer_id',
           'post_id',

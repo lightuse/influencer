@@ -66,7 +66,7 @@ export class InfluencerService {
     const posts = await this.repository.findByInfluencerId(influencerId);
     const texts = posts
       .map((post: InfluencerPost) => post.text)
-      .filter(Boolean) as string[];
+      .filter((text): text is string => !!text);
     const nounCounts = await this.textAnalysisService.analyzeTexts(texts);
 
     return {

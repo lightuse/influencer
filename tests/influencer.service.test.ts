@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeAll } from 'vitest';
+import { describe, it, expect } from 'vitest';
 import { InfluencerService } from '../src/application/influencer.service.js';
 import { TextAnalysisService } from '../src/application/text-analysis.service.js';
 import { InfluencerPostRepository } from '../src/domain/repositories.js';
@@ -88,7 +88,7 @@ describe('InfluencerService', () => {
   let mockRepository: MockRepository;
   let mockTextAnalysisService: TextAnalysisService;
 
-  beforeAll(async () => {
+  beforeEach(() => {
     // 各テストで使うモックとサービスを初期化
     mockRepository = new MockRepository();
     mockTextAnalysisService = {

@@ -11,8 +11,13 @@ class MockRepository implements InfluencerPostRepository {
   bulkCreate = vi.fn(
     async (
       posts: Omit<InfluencerPost, 'id' | 'createdAt'>[]
-    ): Promise<number> => {
-      return posts.length;
+    ): Promise<{
+      created: Omit<InfluencerPost, 'id' | 'createdAt'>[];
+      skipped: Omit<InfluencerPost, 'id' | 'createdAt'>[];
+    }> => {
+      // In a real scenario, you might filter existing posts.
+      // For this mock, we'll assume all posts are new.
+      return { created: posts, skipped: [] };
     }
   );
 
@@ -54,7 +59,7 @@ describe('ImportService', () => {
     expect(mockRepository.bulkCreate).toHaveBeenCalledWith([
       expect.objectContaining({
         influencerId: 1,
-        postId: BigInt(101),
+        postId: '101',
         likes: 1000,
         comments: 50,
         text: 'Hello World',
@@ -80,7 +85,7 @@ describe('ImportService', () => {
     expect(mockRepository.bulkCreate).toHaveBeenCalledWith([
       expect.objectContaining({
         influencerId: 1,
-        postId: BigInt(101),
+        postId: '101',
       }),
     ]);
   });
