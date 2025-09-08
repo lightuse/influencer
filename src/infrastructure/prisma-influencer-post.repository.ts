@@ -44,10 +44,19 @@ export interface MinimalInfluencerPostDelegate {
     select?: undefined;
   }): Promise<InfluencerPost[]>;
   // Implementation signature (for compatibility)
-  findMany(args: {
-    where: { influencerId?: number; postId?: { in: string[] } };
-    select?: { postId?: boolean };
-  }): Promise<InfluencerPost[]> | Promise<{ postId: string }[]>;
+  findMany<
+    T extends {
+      where: { influencerId?: number; postId?: { in: string[] } };
+      select?: { postId?: boolean };
+    },
+  >(
+    args: T
+  ): Promise<
+    T extends { select: { postId: true } }
+      ? { postId: string }[]
+      : InfluencerPost[]
+  >;
+  // Overload: aggregate
   aggregate: (args: {
     where: { influencerId: number };
     _avg: { likes: boolean; comments: boolean };
@@ -59,6 +68,7 @@ export interface MinimalInfluencerPostDelegate {
     };
     _count: number;
   }>;
+  // Overload: groupBy
   groupBy: (args: {
     by: ['influencerId'];
     _avg?: { likes?: boolean; comments?: boolean };
@@ -121,7 +131,7 @@ export class PrismaInfluencerPostRepository
   async create(
     data: Omit<InfluencerPost, 'id' | 'createdAt'>
   ): Promise<InfluencerPost> {
-    return await this.prisma.influencerPost.create({
+    return this.prisma.influencerPost.create({
       data: data,
     });
   }
@@ -132,7 +142,7 @@ export class PrismaInfluencerPostRepository
    * @returns 投稿データ配列
    */
   async findByInfluencerId(influencerId: number): Promise<InfluencerPost[]> {
-    return await this.prisma.influencerPost.findMany({
+    return this.prisma.influencerPost.findMany({
       where: { influencerId },
     });
   }
