@@ -144,9 +144,9 @@ export class PrismaInfluencerPostRepository
    * @returns 投稿データ配列
    */
   async findByInfluencerId(influencerId: number): Promise<InfluencerPost[]> {
-    const results = (await this.prisma.influencerPost.findMany({
+    const results = await this.prisma.influencerPost.findMany({
       where: { influencerId },
-    })) as InfluencerPost[];
+    });
 
     return results.map((result: InfluencerPost) => ({
       id: result.id,
@@ -259,10 +259,10 @@ export class PrismaInfluencerPostRepository
     const existing: { postId: string }[] = [];
     for (let i = 0; i < postIds.length; i += BATCH_SIZE) {
       const batch = postIds.slice(i, i + BATCH_SIZE);
-      const batchExisting = (await this.prisma.influencerPost.findMany({
+      const batchExisting = await this.prisma.influencerPost.findMany({
         where: { postId: { in: batch } },
         select: { postId: true },
-      })) as { postId: string }[];
+      });
       existing.push(...batchExisting);
     }
     const existingIds = new Set(existing.map(e => e.postId));
