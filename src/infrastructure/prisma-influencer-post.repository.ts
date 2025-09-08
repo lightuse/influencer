@@ -64,7 +64,13 @@ export class PrismaInfluencerPostRepository
   implements InfluencerPostRepository
 {
   /**
-   * PrismaのDecimalやnumberをnumber型に変換するユーティリティ。
+   * PrismaのDecimal型・number型・null/undefinedを数値型（number）に変換します。
+   * Prismaの集計クエリ結果から安全に数値を取得するために使用し、
+   * 値がDecimalオブジェクト・number・null（例: レコードが存在しない場合）など様々なケースに対応します。
+   * nullやundefinedの場合は0を返します。
+   *
+   * @param val 変換対象の値（number, PrismaのDecimal, null/undefined）
+   * @returns 数値（null/undefinedの場合は0）
    */
   private static toNum(
     val: number | { toNumber(): number } | null | undefined
@@ -98,12 +104,12 @@ export class PrismaInfluencerPostRepository
       id: result.id,
       influencerId: result.influencerId,
       postId: result.postId,
-      shortcode: result.shortcode ?? undefined,
+      shortcode: result.shortcode,
       likes: result.likes,
       comments: result.comments,
-      thumbnail: result.thumbnail ?? undefined,
-      text: result.text ?? undefined,
-      postDate: result.postDate ?? undefined,
+      thumbnail: result.thumbnail,
+      text: result.text,
+      postDate: result.postDate,
       createdAt: result.createdAt,
     };
   }

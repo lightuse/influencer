@@ -162,7 +162,7 @@ describe('PrismaInfluencerPostRepository', () => {
     expect(notExists).toBe(false);
   });
 
-  // コメント数がnullの場合も0.00として扱うこと
+  // コメント数がnullの場合も0として扱うこと
   it('should handle null avgComments when getting top influencers by comments', async () => {
     const top = await repo.getTopInfluencersByComments(
       LIMIT_INCLUDING_NULL_COMMENTS
