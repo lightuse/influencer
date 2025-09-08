@@ -50,6 +50,9 @@ export class TextAnalysisService {
   async analyzeTexts(texts: string[]): Promise<NounCount[]> {
     if (!this.tokenizer) {
       await this.initialize();
+      if (!this.tokenizer) {
+        throw new Error('Tokenizer initialization failed.');
+      }
     }
 
     const nounCounts = new Map<string, number>();

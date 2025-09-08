@@ -63,6 +63,7 @@ export class ImportService {
 
     const stream = Readable.from(fileBuffer).pipe(csvParser());
     let posts: PostData[] = [];
+    const batchSize = ImportService.BATCH_SIZE;
 
     try {
       for await (const row of stream) {
@@ -85,7 +86,7 @@ export class ImportService {
           const post = this.transformRowToPost(row as CSVRow);
           posts.push(post);
 
-          if (posts.length >= ImportService.BATCH_SIZE) {
+          if (posts.length >= batchSize) {
             await this.processBatch(posts, results);
             posts = [];
           }
