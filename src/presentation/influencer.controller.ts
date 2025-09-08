@@ -106,7 +106,7 @@ export class InfluencerController {
    * コメント数ランキング取得API。
    * @param req Expressリクエスト
    * @param res Expressレスポンス
-   * @returns
+   * @returns Promise<void> - Returns a Promise that resolves when the response is sent.
    */
   async getTopInfluencersByComments(
     req: Request,

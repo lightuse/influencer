@@ -69,6 +69,11 @@ namespace InfluencerAPI {
     timestamp: utcDateTime;
   }
 
+  model TopInfluencersResponse {
+    limit: int32;
+    results: TopInfluencer[];
+  }
+
   // API Routes
   @route("/api")
   interface ApiRoutes {
@@ -82,15 +87,22 @@ namespace InfluencerAPI {
 
     @get
     @route("/influencers/top/likes")
-    getTopInfluencersByLikes(): TopInfluencer[] | ErrorResponse;
+    getTopInfluencersByLikes(
+      @query limit?: int32
+    ): TopInfluencersResponse | ErrorResponse;
 
     @get
     @route("/influencers/top/comments")
-    getTopInfluencersByComments(): TopInfluencer[] | ErrorResponse;
+    getTopInfluencersByComments(
+      @query limit?: int32
+    ): TopInfluencersResponse | ErrorResponse;
 
     @get
     @route("/influencers/{influencerId}/nouns")
-    getInfluencerNouns(@path influencerId: int32): NounAnalysisResult | ErrorResponse;
+    getTopNouns(
+      @path influencerId: int32,
+      @query limit?: int32
+    ): NounAnalysisResult | ErrorResponse;
 
     @post
     @route("/import/csv")

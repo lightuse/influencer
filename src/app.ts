@@ -66,7 +66,7 @@ const importController = new ImportController(importService);
 /**
  * ルーティングの設定。
  */
-app.use('/api', createInfluencerRoutes(influencerController));
+app.use('/api/influencers', createInfluencerRoutes(influencerController));
 app.use('/api/import', createImportRoutes(importController));
 
 /**
