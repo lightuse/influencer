@@ -13,7 +13,7 @@ type GroupByArgs = {
   take?: any;
 };
 type CreateManyArgs = { data: any[] };
-type FindUniqueArgs = { where: any };
+type FindUniqueArgs = { where: { postId: string } };
 
 // テスト用のモッククラス
 // 各メソッドはPrismaの挙動を模倣
@@ -61,7 +61,6 @@ class MockPrisma {
         orderBy._avg.comments === 'desc' &&
         take === 2
       ) {
-        // Simulate a scenario where comments are null for a specific influencerId (e.g., 999)
         return [
           { influencerId: 1, _avg: { likes: 10, comments: 2 }, _count: 1 },
           { influencerId: 999, _avg: { likes: 5, comments: null }, _count: 1 },

@@ -44,12 +44,12 @@ export class PrismaInfluencerPostRepository
       id: result.id,
       influencerId: result.influencerId,
       postId: result.postId,
-      shortcode: result.shortcode || undefined,
+      shortcode: result.shortcode ?? undefined,
       likes: result.likes,
       comments: result.comments,
-      thumbnail: result.thumbnail || undefined,
-      text: result.text || undefined,
-      postDate: result.postDate || undefined,
+      thumbnail: result.thumbnail ?? undefined,
+      text: result.text ?? undefined,
+      postDate: result.postDate ?? undefined,
       createdAt: result.createdAt,
     };
   }
