@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, beforeEach } from 'vitest';
 import { InfluencerService } from '../src/application/influencer.service.js';
 import { TextAnalysisService } from '../src/application/text-analysis.service.js';
 import { InfluencerPostRepository } from '../src/domain/repositories.js';
@@ -17,21 +17,23 @@ class MockRepository implements InfluencerPostRepository {
     return Promise.resolve({ ...data, id: 1, createdAt: new Date() });
   }
   // 複数投稿作成のモック
-  bulkCreate(
-    posts: Omit<InfluencerPost, 'id' | 'createdAt'>[]
-  ): Promise<number> {
-    return Promise.resolve(posts.length);
+  bulkCreate(posts: Omit<InfluencerPost, 'id' | 'createdAt'>[]): Promise<{
+    created: Omit<InfluencerPost, 'id' | 'createdAt'>[];
+    skipped: Omit<InfluencerPost, 'id' | 'createdAt'>[];
+  }> {
+    // すべて作成成功と仮定し、skippedは空配列
+    return Promise.resolve({ created: posts, skipped: [] });
   }
   // 投稿存在確認のモック
-  exists(_postId: bigint): Promise<boolean> {
+  exists(_postId: string): Promise<boolean> {
     return Promise.resolve(true);
   }
   // インフルエンサー統計情報取得のモック
   getInfluencerStats(influencerId: number): Promise<InfluencerStats | null> {
     return Promise.resolve({
       influencerId,
-      avgLikes: '100.0',
-      avgComments: '10.0',
+      avgLikes: 100.0,
+      avgComments: 10.0,
       postCount: 5,
     });
   }
@@ -40,8 +42,8 @@ class MockRepository implements InfluencerPostRepository {
     return Promise.resolve(
       Array.from({ length: limit }, (_, i) => ({
         influencerId: i + 1,
-        avgLikes: (100 - i).toString(),
-        avgComments: '10',
+        avgLikes: 100 - i,
+        avgComments: 10,
         postCount: 5,
       }))
     );
@@ -51,8 +53,8 @@ class MockRepository implements InfluencerPostRepository {
     return Promise.resolve(
       Array.from({ length: limit }, (_, i) => ({
         influencerId: i + 1,
-        avgLikes: '100',
-        avgComments: (10 - i).toString(),
+        avgLikes: 100,
+        avgComments: 10 - i,
         postCount: 5,
       }))
     );
@@ -63,7 +65,7 @@ class MockRepository implements InfluencerPostRepository {
       {
         id: 1,
         influencerId,
-        postId: BigInt(1),
+        postId: '1',
         likes: 10,
         comments: 5,
         text: '猫が好きです。犬も好きです。',
@@ -72,7 +74,7 @@ class MockRepository implements InfluencerPostRepository {
       {
         id: 2,
         influencerId,
-        postId: BigInt(2),
+        postId: '2',
         likes: 15,
         comments: 3,
         text: '猫と犬が遊んでいます。',

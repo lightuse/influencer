@@ -149,13 +149,20 @@ export class ImportService {
   ): Promise<void> {
     try {
       // The repository expects Omit<InfluencerPost, 'id' | 'createdAt'>[]
-      const bulkResult = await this.repository.bulkCreate(posts as any);
+      const bulkResult = await this.repository.bulkCreate(
+        posts as Omit<
+          import('../domain/entities.js').InfluencerPost,
+          'id' | 'createdAt'
+        >[]
+      );
 
       if (bulkResult && Array.isArray(bulkResult.created)) {
         const createdCount = bulkResult.created.length;
         results.totalImported += createdCount;
         if (createdCount > 0) {
-          console.log(`Successfully imported a batch of ${createdCount} posts.`);
+          console.log(
+            `Successfully imported a batch of ${createdCount} posts.`
+          );
         }
       } else {
         // The repository returned an unexpected value
