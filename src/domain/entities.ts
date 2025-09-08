@@ -9,17 +9,17 @@ export interface InfluencerPost {
   /** 投稿ID（SNS側のID） */
   postId: string;
   /** 投稿のショートコード */
-  shortcode?: string;
+  shortcode: string | null;
   /** いいね数 */
   likes: number;
   /** コメント数 */
   comments: number;
   /** サムネイルURL */
-  thumbnail?: string;
+  thumbnail: string | null;
   /** 投稿本文 */
-  text?: string;
+  text: string | null;
   /** 投稿日時 */
-  postDate?: Date;
+  postDate: Date | null;
   /** 作成日時 */
   createdAt: Date;
 }

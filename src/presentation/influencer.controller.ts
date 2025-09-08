@@ -1,6 +1,12 @@
 import { Request, Response } from 'express';
 import { InfluencerService } from '../application/influencer.service.js';
-import { TopInfluencer } from '../domain/entities.js';
+import { components } from '../../generated/api-types.js';
+import { TopInfluencer as DomainTopInfluencer } from '../domain/entities.js';
+
+type InfluencerStatsResponse = components['schemas']['InfluencerStats'];
+type TopInfluencersResponse = components['schemas']['TopInfluencersResponse'];
+type NounAnalysisResultResponse = components['schemas']['NounAnalysisResult'];
+type TopInfluencerResponse = components['schemas']['TopInfluencer'];
 
 /**
  * インフルエンサー関連APIコントローラー。
@@ -54,12 +60,14 @@ export class InfluencerController {
         return;
       }
 
-      res.json({
+      const response: InfluencerStatsResponse = {
         influencer_id: stats.influencerId,
-        avg_likes: stats.avgLikes,
-        avg_comments: stats.avgComments,
+        avg_likes: String(stats.avgLikes),
+        avg_comments: String(stats.avgComments),
         post_count: stats.postCount,
-      });
+      };
+
+      res.json(response);
     } catch (error) {
       res.status(500).json({
         error: 'Internal server error',
@@ -86,14 +94,22 @@ export class InfluencerController {
 
       const results =
         await this.influencerService.getTopInfluencersByLikes(limit);
-      res.json({
+
+      const response: TopInfluencersResponse = {
         limit,
-        results: results.map((r: TopInfluencer) => ({
-          influencer_id: r.influencerId,
-          avg_likes: r.avgLikes,
-          post_count: r.postCount,
-        })),
-      });
+        results: results.map(
+          (r: DomainTopInfluencer): TopInfluencerResponse => ({
+            influencer_id: r.influencerId,
+            avg_likes:
+              r.avgLikes !== undefined ? String(r.avgLikes) : undefined,
+            avg_comments:
+              r.avgComments !== undefined ? String(r.avgComments) : undefined,
+            post_count: r.postCount,
+          })
+        ),
+      };
+
+      res.json(response);
     } catch (error) {
       res.status(500).json({
         error: 'Internal server error',
@@ -106,7 +122,7 @@ export class InfluencerController {
    * コメント数ランキング取得API。
    * @param req Expressリクエスト
    * @param res Expressレスポンス
-   * @returns Promise<void> - Returns a Promise that resolves when the response is sent.
+   * @returns
    */
   async getTopInfluencersByComments(
     req: Request,
@@ -124,14 +140,22 @@ export class InfluencerController {
 
       const results =
         await this.influencerService.getTopInfluencersByComments(limit);
-      res.json({
+
+      const response: TopInfluencersResponse = {
         limit,
-        results: results.map((r: TopInfluencer) => ({
-          influencer_id: r.influencerId,
-          avg_comments: r.avgComments,
-          post_count: r.postCount,
-        })),
-      });
+        results: results.map(
+          (r: DomainTopInfluencer): TopInfluencerResponse => ({
+            influencer_id: r.influencerId,
+            avg_likes:
+              r.avgLikes !== undefined ? String(r.avgLikes) : undefined,
+            avg_comments:
+              r.avgComments !== undefined ? String(r.avgComments) : undefined,
+            post_count: r.postCount,
+          })
+        ),
+      };
+
+      res.json(response);
     } catch (error) {
       res.status(500).json({
         error: 'Internal server error',
@@ -184,11 +208,13 @@ export class InfluencerController {
         return;
       }
 
-      res.json({
+      const response: NounAnalysisResultResponse = {
         influencer_id: result.influencerId,
         total_posts: result.totalPosts,
         nouns: result.nouns,
-      });
+      };
+
+      res.json(response);
     } catch (error) {
       res.status(500).json({
         error: 'Internal server error',

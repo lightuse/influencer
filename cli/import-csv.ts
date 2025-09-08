@@ -109,7 +109,7 @@ async function importCSV() {
       ) {
         const post = {
           influencerId,
-          postId,
+          postId: postId.toString(),
           shortcode: row.shortcode || null,
           likes: parseInt(row.likes, 10) || 0,
           comments: parseInt(row.comments, 10) || 0,

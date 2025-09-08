@@ -60,8 +60,8 @@ describe('InfluencerController', () => {
       expect(res.status).not.toHaveBeenCalled();
       expect(res.json).toHaveBeenCalledWith({
         influencer_id: 1,
-        avg_likes: 100,
-        avg_comments: 20,
+        avg_likes: '100',
+        avg_comments: '20',
         post_count: 5,
       });
     });
@@ -152,8 +152,8 @@ describe('InfluencerController', () => {
       // Arrange
       req.query = { limit: '5' };
       const topInfluencers = [
-        { influencerId: 1, avgLikes: 1000, postCount: 10 },
-        { influencerId: 2, avgLikes: 900, postCount: 8 },
+        { influencerId: 1, avgLikes: 1000, postCount: 10, avgComments: 10 },
+        { influencerId: 2, avgLikes: 900, postCount: 8, avgComments: 10 },
       ];
       (influencerService.getTopInfluencersByLikes as Mock).mockResolvedValue(
         topInfluencers
@@ -169,8 +169,18 @@ describe('InfluencerController', () => {
       expect(res.json).toHaveBeenCalledWith({
         limit: 5,
         results: [
-          { influencer_id: 1, avg_likes: 1000, post_count: 10 },
-          { influencer_id: 2, avg_likes: 900, post_count: 8 },
+          {
+            influencer_id: 1,
+            avg_likes: '1000',
+            avg_comments: '10',
+            post_count: 10,
+          },
+          {
+            influencer_id: 2,
+            avg_likes: '900',
+            avg_comments: '10',
+            post_count: 8,
+          },
         ],
       });
     });
@@ -237,8 +247,8 @@ describe('InfluencerController', () => {
     it('should use default limit if not provided', async () => {
       // Arrange
       const topInfluencers = [
-        { influencerId: 1, avgLikes: 1000, postCount: 10 },
-        { influencerId: 2, avgLikes: 900, postCount: 8 },
+        { influencerId: 1, avgLikes: 1000, postCount: 10, avgComments: 10 },
+        { influencerId: 2, avgLikes: 900, postCount: 8, avgComments: 10 },
       ];
       (influencerService.getTopInfluencersByLikes as Mock).mockResolvedValue(
         topInfluencers
@@ -257,8 +267,18 @@ describe('InfluencerController', () => {
       expect(res.json).toHaveBeenCalledWith({
         limit: 10,
         results: [
-          { influencer_id: 1, avg_likes: 1000, post_count: 10 },
-          { influencer_id: 2, avg_likes: 900, post_count: 8 },
+          {
+            influencer_id: 1,
+            avg_likes: '1000',
+            avg_comments: '10',
+            post_count: 10,
+          },
+          {
+            influencer_id: 2,
+            avg_likes: '900',
+            avg_comments: '10',
+            post_count: 8,
+          },
         ],
       });
     });
@@ -269,8 +289,8 @@ describe('InfluencerController', () => {
       // Arrange
       req.query = { limit: '3' };
       const topInfluencers = [
-        { influencerId: 3, avgComments: 50, postCount: 12 },
-        { influencerId: 4, avgComments: 45, postCount: 7 },
+        { influencerId: 3, avgLikes: 100, avgComments: 50, postCount: 12 },
+        { influencerId: 4, avgLikes: 100, avgComments: 45, postCount: 7 },
       ];
       (influencerService.getTopInfluencersByComments as Mock).mockResolvedValue(
         topInfluencers
@@ -286,8 +306,18 @@ describe('InfluencerController', () => {
       expect(res.json).toHaveBeenCalledWith({
         limit: 3,
         results: [
-          { influencer_id: 3, avg_comments: 50, post_count: 12 },
-          { influencer_id: 4, avg_comments: 45, post_count: 7 },
+          {
+            influencer_id: 3,
+            avg_likes: '100',
+            avg_comments: '50',
+            post_count: 12,
+          },
+          {
+            influencer_id: 4,
+            avg_likes: '100',
+            avg_comments: '45',
+            post_count: 7,
+          },
         ],
       });
     });
@@ -352,8 +382,8 @@ describe('InfluencerController', () => {
     it('should use default limit if not provided', async () => {
       // Arrange
       const topInfluencers = [
-        { influencerId: 3, avgComments: 50, postCount: 12 },
-        { influencerId: 4, avgComments: 45, postCount: 7 },
+        { influencerId: 3, avgLikes: 100, avgComments: 50, postCount: 12 },
+        { influencerId: 4, avgLikes: 100, avgComments: 45, postCount: 7 },
       ];
       (influencerService.getTopInfluencersByComments as Mock).mockResolvedValue(
         topInfluencers
@@ -372,8 +402,18 @@ describe('InfluencerController', () => {
       expect(res.json).toHaveBeenCalledWith({
         limit: 10,
         results: [
-          { influencer_id: 3, avg_comments: 50, post_count: 12 },
-          { influencer_id: 4, avg_comments: 45, post_count: 7 },
+          {
+            influencer_id: 3,
+            avg_likes: '100',
+            avg_comments: '50',
+            post_count: 12,
+          },
+          {
+            influencer_id: 4,
+            avg_likes: '100',
+            avg_comments: '45',
+            post_count: 7,
+          },
         ],
       });
     });

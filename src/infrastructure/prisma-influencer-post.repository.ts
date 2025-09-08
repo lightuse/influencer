@@ -1,3 +1,4 @@
+import { PrismaClient } from '@prisma/client';
 import { InfluencerPostRepository } from '../domain/repositories.js';
 import {
   InfluencerPost,
@@ -11,85 +12,11 @@ const BATCH_SIZE = 500;
 type GroupByResult = {
   influencerId: number;
   _avg: {
-    likes?: number;
+    likes?: number | null;
     comments?: number | null;
   };
   _count: number;
 };
-
-// PrismaのInfluencerPostモデルに対応する最小限のDelegateインターフェース
-export interface MinimalInfluencerPostDelegate {
-  create: (args: {
-    data: Omit<InfluencerPost, 'id' | 'createdAt'>;
-  }) => Promise<{
-    id: number;
-    influencerId: number;
-    postId: string;
-    shortcode?: string;
-    likes: number;
-    comments: number;
-    thumbnail?: string;
-    text?: string;
-    postDate?: Date;
-    createdAt: Date;
-  }>;
-  // Overload: select postId only
-  findMany(args: {
-    where: { influencerId?: number; postId?: { in: string[] } };
-    select: { postId: true };
-  }): Promise<{ postId: string }[]>;
-  // Overload: no select or select is undefined
-  findMany(args: {
-    where: { influencerId?: number; postId?: { in: string[] } };
-    select?: undefined;
-  }): Promise<InfluencerPost[]>;
-  // Implementation signature (for compatibility)
-  findMany<
-    T extends {
-      where: { influencerId?: number; postId?: { in: string[] } };
-      select?: { postId?: boolean };
-    },
-  >(
-    args: T
-  ): Promise<
-    T extends { select: { postId: true } }
-      ? { postId: string }[]
-      : InfluencerPost[]
-  >;
-  // Overload: aggregate
-  aggregate: (args: {
-    where: { influencerId: number };
-    _avg: { likes: boolean; comments: boolean };
-    _count: boolean;
-  }) => Promise<{
-    _avg: {
-      likes: number | { toNumber: () => number };
-      comments: number | { toNumber: () => number };
-    };
-    _count: number;
-  }>;
-  // Overload: groupBy
-  groupBy: (args: {
-    by: ['influencerId'];
-    _avg?: { likes?: boolean; comments?: boolean };
-    _count?: boolean;
-    orderBy?: { _avg: { likes?: 'desc' | 'asc'; comments?: 'desc' | 'asc' } };
-    take?: number;
-  }) => Promise<
-    {
-      influencerId: number;
-      _avg: { likes?: number; comments?: number | null };
-      _count: number;
-    }[]
-  >;
-  createMany: (args: {
-    data: Omit<InfluencerPost, 'id' | 'createdAt'>[];
-    skipDuplicates?: boolean;
-  }) => Promise<{ count: number }>;
-  findUnique: (args: {
-    where: { postId: string };
-  }) => Promise<{ id: number } | null>;
-}
 
 /**
  * Prismaを用いたインフルエンサーポストリポジトリの実装。
@@ -119,9 +46,7 @@ export class PrismaInfluencerPostRepository
    * リポジトリのインスタンスを生成します。
    * @param prisma PrismaClientインスタンス
    */
-  constructor(
-    private prisma: { influencerPost: MinimalInfluencerPostDelegate }
-  ) {}
+  constructor(private prisma: PrismaClient) {}
 
   /**
    * 新しい投稿データを作成します。

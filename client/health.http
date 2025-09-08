@@ -1,0 +1,6 @@
+### REST Client for Health Check API
+### ベースURL: http://localhost:3000
+@baseUrl = http://localhost:3000
+
+### ヘルスチェック
+GET {{baseUrl}}/api/health
