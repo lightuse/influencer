@@ -1,6 +1,12 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import { PrismaInfluencerPostRepository } from '../src/infrastructure/prisma-influencer-post.repository.js';
 
+interface MinimalPrisma {
+  influencerPost: MinimalInfluencerPostDelegate;
+}
+import {
+  PrismaInfluencerPostRepository,
+  MinimalInfluencerPostDelegate,
+} from '../src/infrastructure/prisma-influencer-post.repository.js';
 // 2件取得してnullコメントも含める意図を明示
 const LIMIT_INCLUDING_NULL_COMMENTS = 2;
 // 投稿IDでユニーク検索するための型
@@ -26,9 +32,8 @@ type GroupByArgs = {
 };
 type CreateManyArgs = { data: InfluencerPost[] };
 
-// テスト用のモッククラス
-// 各メソッドはPrismaの挙動を模倣
-class MockPrisma {
+//
+class MockPrisma implements MinimalPrisma {
   influencerPost = {
     // 投稿作成のモック
     create: async ({ data }: CreateArgs) => ({
@@ -92,8 +97,8 @@ describe('PrismaInfluencerPostRepository', () => {
   let repo: PrismaInfluencerPostRepository;
 
   beforeEach(() => {
-    // 各テストごとに新しいリポジトリを生成
-    repo = new PrismaInfluencerPostRepository(new MockPrisma() as any);
+    // 各テストごとに新しいリポジトリを型安全に生成
+    repo = new PrismaInfluencerPostRepository(new MockPrisma());
   });
 
   // 投稿を作成できること

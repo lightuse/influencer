@@ -1,4 +1,13 @@
-import { PrismaClient } from '@prisma/client';
+// Minimal interface for influencerPost delegate for type-safe mocking
+export interface MinimalInfluencerPostDelegate {
+  create: (...args: any[]) => Promise<any>;
+  findMany: (...args: any[]) => Promise<any>;
+  aggregate: (...args: any[]) => Promise<any>;
+  groupBy: (...args: any[]) => Promise<any>;
+  createMany: (...args: any[]) => Promise<any>;
+  findUnique: (...args: any[]) => Promise<any>;
+}
+
 import { InfluencerPostRepository } from '../domain/repositories.js';
 import {
   InfluencerPost,
@@ -26,7 +35,9 @@ export class PrismaInfluencerPostRepository
    * リポジトリのインスタンスを生成します。
    * @param prisma PrismaClientインスタンス
    */
-  constructor(private prisma: PrismaClient) {}
+  constructor(
+    private prisma: { influencerPost: MinimalInfluencerPostDelegate }
+  ) {}
 
   /**
    * 新しい投稿データを作成します。
@@ -73,7 +84,7 @@ export class PrismaInfluencerPostRepository
       where: { influencerId },
     });
 
-    return results.map(result => ({
+    return results.map((result: any) => ({
       id: result.id,
       influencerId: result.influencerId,
       postId: result.postId,
@@ -136,7 +147,7 @@ export class PrismaInfluencerPostRepository
       take: limit,
     });
 
-    return results.map(result => ({
+    return results.map((result: any) => ({
       influencerId: result.influencerId,
       avgLikes: result._avg.likes ?? 0,
       postCount: result._count,
@@ -163,7 +174,7 @@ export class PrismaInfluencerPostRepository
       take: limit,
     });
 
-    return results.map(result => ({
+    return results.map((result: any) => ({
       influencerId: result.influencerId,
       avgComments: result._avg.comments ?? 0,
       postCount: result._count,
@@ -185,7 +196,7 @@ export class PrismaInfluencerPostRepository
       where: { postId: { in: postIds } },
       select: { postId: true },
     });
-    const existingIds = new Set(existing.map(e => e.postId));
+    const existingIds = new Set((existing as any[]).map((e: any) => e.postId));
 
     const toCreate = posts.filter(p => !existingIds.has(p.postId));
     const skipped = posts.filter(p => existingIds.has(p.postId));
