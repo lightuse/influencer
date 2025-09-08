@@ -100,7 +100,7 @@ export class PrismaInfluencerPostRepository
   private static toNum(
     val: number | { toNumber(): number } | null | undefined
   ): number {
-    if (val == null) return 0;
+    if (val === null || val === undefined) return 0;
     if (typeof val === 'number') return val;
     if (typeof val.toNumber === 'function') return val.toNumber();
     return Number(val) || 0;
@@ -122,7 +122,7 @@ export class PrismaInfluencerPostRepository
     data: Omit<InfluencerPost, 'id' | 'createdAt'>
   ): Promise<InfluencerPost> {
     const result = await this.prisma.influencerPost.create({
-      data: { ...data },
+      data: data,
     });
 
     return result;
