@@ -32,10 +32,21 @@ export interface MinimalInfluencerPostDelegate {
     postDate?: Date;
     createdAt: Date;
   }>;
-  findMany: (args: {
+  // Overload: select postId only
+  findMany(args: {
+    where: { influencerId?: number; postId?: { in: string[] } };
+    select: { postId: true };
+  }): Promise<{ postId: string }[]>;
+  // Overload: no select or select is undefined
+  findMany(args: {
+    where: { influencerId?: number; postId?: { in: string[] } };
+    select?: undefined;
+  }): Promise<InfluencerPost[]>;
+  // Implementation signature (for compatibility)
+  findMany(args: {
     where: { influencerId?: number; postId?: { in: string[] } };
     select?: { postId?: boolean };
-  }) => Promise<InfluencerPost[]> | Promise<{ postId: string }[]>;
+  }): Promise<InfluencerPost[]> | Promise<{ postId: string }[]>;
   aggregate: (args: {
     where: { influencerId: number };
     _avg: { likes: boolean; comments: boolean };
@@ -248,10 +259,10 @@ export class PrismaInfluencerPostRepository
     const existing: { postId: string }[] = [];
     for (let i = 0; i < postIds.length; i += BATCH_SIZE) {
       const batch = postIds.slice(i, i + BATCH_SIZE);
-      const batchExisting = await this.prisma.influencerPost.findMany({
+      const batchExisting = (await this.prisma.influencerPost.findMany({
         where: { postId: { in: batch } },
         select: { postId: true },
-      });
+      })) as { postId: string }[];
       existing.push(...batchExisting);
     }
     const existingIds = new Set(existing.map(e => e.postId));
