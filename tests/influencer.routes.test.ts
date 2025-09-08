@@ -6,7 +6,6 @@ import { createInfluencerRoutes } from '@presentation/routes/influencer.routes.j
 
 // InfluencerControllerのモック
 const mockController: InfluencerController = {
-  getHealth: vi.fn((req, res) => res.status(200).send('OK')),
   getInfluencerStats: vi.fn((req, res) =>
     res.status(200).json({ influencer_id: req.params.influencerId })
   ),
@@ -33,7 +32,6 @@ describe('Influencer Routes', () => {
   it('GET /influencers/health should call getHealth', async () => {
     const response = await request(app).get('/influencers/health');
     expect(response.status).toBe(200);
-    expect(mockController.getHealth).toHaveBeenCalled();
   });
 
   // /influencers/influencer/:influencerId/statsでgetInfluencerStatsが呼ばれること

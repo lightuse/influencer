@@ -11,9 +11,6 @@ export function createInfluencerRoutes(
 ): Router {
   const router = Router();
 
-  // ヘルスチェック
-  router.get('/health', controller.getHealth.bind(controller));
-
   // いいね数上位インフルエンサー
   router.get(
     '/top/likes',
