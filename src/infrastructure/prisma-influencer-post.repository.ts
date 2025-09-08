@@ -121,11 +121,9 @@ export class PrismaInfluencerPostRepository
   async create(
     data: Omit<InfluencerPost, 'id' | 'createdAt'>
   ): Promise<InfluencerPost> {
-    const result = await this.prisma.influencerPost.create({
+    return await this.prisma.influencerPost.create({
       data: data,
     });
-
-    return result;
   }
 
   /**
@@ -134,11 +132,9 @@ export class PrismaInfluencerPostRepository
    * @returns 投稿データ配列
    */
   async findByInfluencerId(influencerId: number): Promise<InfluencerPost[]> {
-    const results = await this.prisma.influencerPost.findMany({
+    return await this.prisma.influencerPost.findMany({
       where: { influencerId },
     });
-
-    return results;
   }
 
   /**
