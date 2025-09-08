@@ -1,6 +1,10 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { PrismaInfluencerPostRepository } from '../src/infrastructure/prisma-influencer-post.repository.js';
 
+// 2件取得してnullコメントも含める意図を明示
+const LIMIT_INCLUDING_NULL_COMMENTS = 2;
+// 投稿IDでユニーク検索するための型
+type FindUniqueArgs = { where: { postId: string } };
 // テスト用のInfluencerPost型（必要なフィールドのみ）
 type InfluencerPost = {
   id?: number;
@@ -155,7 +159,6 @@ describe('PrismaInfluencerPostRepository', () => {
   });
 
   // コメント数がnullの場合も0.00として扱うこと
-  const LIMIT_INCLUDING_NULL_COMMENTS = 2; // 2件取得してnullコメントも含める意図を明示
   it('should handle null avgComments when getting top influencers by comments', async () => {
     const top = await repo.getTopInfluencersByComments(
       LIMIT_INCLUDING_NULL_COMMENTS
