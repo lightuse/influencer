@@ -1,12 +1,6 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 
-import {
-  PrismaInfluencerPostRepository,
-  MinimalInfluencerPostDelegate,
-} from '../src/infrastructure/prisma-influencer-post.repository.js';
-interface MinimalPrisma {
-  influencerPost: MinimalInfluencerPostDelegate;
-}
+import { PrismaInfluencerPostRepository } from '../src/infrastructure/prisma-influencer-post.repository.js';
 // 2件取得してnullコメントも含める意図を明示
 const LIMIT_INCLUDING_NULL_COMMENTS = 2;
 // 投稿IDでユニーク検索するための型
@@ -23,15 +17,8 @@ type InfluencerPost = {
 type CreateArgs = { data: InfluencerPost };
 type FindManyArgs = { where: { influencerId?: number } };
 type AggregateArgs = { where: { influencerId?: number } };
-type GroupByArgs = {
-  by: string[];
-  _avg?: { [key: string]: true };
-  _count?: boolean | { [key: string]: true };
-  orderBy?: { _avg?: { [key: string]: 'asc' | 'desc' } };
-  take?: number;
-};
 type CreateManyArgs = { data: InfluencerPost[] };
-class MockPrisma implements MinimalPrisma {
+class MockPrisma {
   influencerPost = {
     // 投稿作成のモック
     create: async ({ data }: CreateArgs) => ({
@@ -67,7 +54,19 @@ class MockPrisma implements MinimalPrisma {
       return { _avg: { likes: 0, comments: 0 }, _count: 0 };
     },
     // グループ化・集計のモック
-    groupBy: async ({ by, _avg, _count, orderBy, take }: GroupByArgs) => {
+    groupBy: async ({
+      by,
+      _avg,
+      _count,
+      orderBy,
+      take,
+    }: {
+      by: ['influencerId'];
+      _avg?: { likes?: boolean; comments?: boolean };
+      _count?: boolean;
+      orderBy?: { _avg: { likes?: 'desc' | 'asc'; comments?: 'desc' | 'asc' } };
+      take?: number;
+    }) => {
       if (
         by.includes('influencerId') &&
         orderBy &&
