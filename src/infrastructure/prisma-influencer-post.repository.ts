@@ -91,16 +91,7 @@ export class PrismaInfluencerPostRepository
     data: Omit<InfluencerPost, 'id' | 'createdAt'>
   ): Promise<InfluencerPost> {
     const result = await this.prisma.influencerPost.create({
-      data: {
-        influencerId: data.influencerId,
-        postId: data.postId,
-        shortcode: data.shortcode,
-        likes: data.likes,
-        comments: data.comments,
-        thumbnail: data.thumbnail,
-        text: data.text,
-        postDate: data.postDate,
-      },
+      data: { ...data },
     });
 
     return {
