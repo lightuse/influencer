@@ -43,13 +43,14 @@ export interface InfluencerPostRepository {
   getTopInfluencersByComments(limit: number): Promise<TopInfluencer[]>;
 
   /**
-   * 投稿データを一括で作成します。
+   * 投稿データを一括で作成し、作成・スキップされた投稿を返します。
    * @param posts 投稿データ配列（id, createdAt除く）
-   * @returns 作成件数
+   * @returns { created, skipped } 作成・スキップされた投稿データ配列
    */
-  bulkCreate(
-    posts: Omit<InfluencerPost, 'id' | 'createdAt'>[]
-  ): Promise<number>;
+  bulkCreate(posts: Omit<InfluencerPost, 'id' | 'createdAt'>[]): Promise<{
+    created: Omit<InfluencerPost, 'id' | 'createdAt'>[];
+    skipped: Omit<InfluencerPost, 'id' | 'createdAt'>[];
+  }>;
 
   /**
    * 指定postIdの投稿が存在するか判定します。
