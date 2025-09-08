@@ -14,6 +14,15 @@ export class PrismaInfluencerPostRepository
   implements InfluencerPostRepository
 {
   /**
+   * PrismaのDecimalやnumberをnumber型に変換するユーティリティ。
+   */
+  private static toNum(val: any): number {
+    if (val == null) return 0;
+    if (typeof val === 'number') return val;
+    if (typeof val.toNumber === 'function') return val.toNumber();
+    return Number(val) || 0;
+  }
+  /**
    * リポジトリのインスタンスを生成します。
    * @param prisma PrismaClientインスタンス
    */
@@ -99,16 +108,10 @@ export class PrismaInfluencerPostRepository
       return null;
     }
 
-    function toNum(val: any) {
-      if (val == null) return 0;
-      if (typeof val === 'number') return val;
-      if (typeof val.toNumber === 'function') return val.toNumber();
-      return Number(val) || 0;
-    }
     return {
       influencerId,
-      avgLikes: toNum(result._avg.likes),
-      avgComments: toNum(result._avg.comments),
+      avgLikes: PrismaInfluencerPostRepository.toNum(result._avg.likes),
+      avgComments: PrismaInfluencerPostRepository.toNum(result._avg.comments),
       postCount: result._count,
     };
   }
