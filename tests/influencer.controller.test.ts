@@ -193,6 +193,7 @@ describe('InfluencerController', () => {
     it('should return 500 on service error', async () => {
       // Arrange
       req.params = { influencerId: '1' };
+      req.query = { limit: '5' };
       const error = new Error('Service error');
       (influencerService.getTopInfluencersByLikes as Mock).mockRejectedValue(
         error
