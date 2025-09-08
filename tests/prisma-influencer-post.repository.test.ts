@@ -31,8 +31,6 @@ type GroupByArgs = {
   take?: number;
 };
 type CreateManyArgs = { data: InfluencerPost[] };
-
-//
 class MockPrisma implements MinimalPrisma {
   influencerPost = {
     // 投稿作成のモック

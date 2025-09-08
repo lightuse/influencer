@@ -1,19 +1,50 @@
-// Minimal interface for influencerPost delegate for type-safe mocking
-export interface MinimalInfluencerPostDelegate {
-  create: (...args: any[]) => Promise<any>;
-  findMany: (...args: any[]) => Promise<any>;
-  aggregate: (...args: any[]) => Promise<any>;
-  groupBy: (...args: any[]) => Promise<any>;
-  createMany: (...args: any[]) => Promise<any>;
-  findUnique: (...args: any[]) => Promise<any>;
-}
-
 import { InfluencerPostRepository } from '../domain/repositories.js';
 import {
   InfluencerPost,
   InfluencerStats,
   TopInfluencer,
 } from '../domain/entities.js';
+// Minimal interface for influencerPost delegate for type-safe mocking
+export interface MinimalInfluencerPostDelegate {
+  create: (args: {
+    data: Omit<InfluencerPost, 'id' | 'createdAt'>;
+  }) => Promise<InfluencerPost>;
+  findMany: (args: {
+    where: { influencerId?: number; postId?: { in: string[] } };
+    select?: { postId?: boolean };
+  }) => Promise<InfluencerPost[]> | Promise<{ postId: string }[]>;
+  aggregate: (args: {
+    where: { influencerId: number };
+    _avg: { likes: boolean; comments: boolean };
+    _count: boolean;
+  }) => Promise<{
+    _avg: {
+      likes: number | { toNumber: () => number };
+      comments: number | { toNumber: () => number };
+    };
+    _count: number;
+  }>;
+  groupBy: (args: {
+    by: ['influencerId'];
+    _avg?: { likes?: boolean; comments?: boolean };
+    _count?: boolean;
+    orderBy?: { _avg: { likes?: 'desc' | 'asc'; comments?: 'desc' | 'asc' } };
+    take?: number;
+  }) => Promise<
+    {
+      influencerId: number;
+      _avg: { likes?: number; comments?: number | null };
+      _count: number;
+    }[]
+  >;
+  createMany: (args: {
+    data: Omit<InfluencerPost, 'id' | 'createdAt'>[];
+    skipDuplicates?: boolean;
+  }) => Promise<{ count: number }>;
+  findUnique: (args: {
+    where: { postId: string };
+  }) => Promise<{ id: number } | null>;
+}
 
 /**
  * Prismaを用いたインフルエンサーポストリポジトリの実装。
