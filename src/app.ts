@@ -102,18 +102,32 @@ app.use('*', (req: express.Request, res: express.Response) => {
   });
 });
 
-// グレースフルシャットダウン
-process.on('SIGTERM', async () => {
-  console.log('SIGTERM received. Shutting down gracefully...');
-  await prisma.$disconnect();
-  process.exit(0);
-});
+// グレースフルシャットダウン処理
+let isShuttingDown = false;
+async function gracefulShutdown(signalOrReason?: string | Error) {
+  if (isShuttingDown) return;
+  isShuttingDown = true;
+  if (signalOrReason) {
+    console.error(`Shutdown reason:`, signalOrReason);
+  }
+  try {
+    await prisma.$disconnect();
+    console.log('Database disconnected.');
+  } catch (e) {
+    console.error('Error during disconnect:', e);
+  } finally {
+    process.exit(typeof signalOrReason === 'number' ? signalOrReason : 1);
+  }
+}
 
-// Ctrl+Cイベントのハンドリング
-process.on('SIGINT', async () => {
+// SIGTERM/SIGINT でのグレースフルシャットダウン
+process.on('SIGTERM', () => {
+  console.log('SIGTERM received. Shutting down gracefully...');
+  gracefulShutdown('SIGTERM');
+});
+process.on('SIGINT', () => {
   console.log('SIGINT received. Shutting down gracefully...');
-  await prisma.$disconnect();
-  process.exit(0);
+  gracefulShutdown('SIGINT');
 });
 
 // テキスト分析サービスを初期化し、サーバーを起動
@@ -138,16 +152,18 @@ async function startServer() {
   }
 }
 
-// グローバルエラーハンドラーを追加
+// グローバルエラーハンドラーもグレースフルシャットダウン
 process.on('uncaughtException', error => {
   console.error('Uncaught Exception:', error);
-  process.exit(1);
+  gracefulShutdown(error);
 });
 
-// 未処理のPromise拒否をハンドリング
+// Promiseの未処理拒否もグレースフルシャットダウン
 process.on('unhandledRejection', (reason, promise) => {
   console.error('Unhandled Rejection at:', promise, 'reason:', reason);
-  process.exit(1);
+  gracefulShutdown(
+    reason instanceof Error ? reason : new Error(String(reason))
+  );
 });
 
 export { app };

@@ -36,30 +36,6 @@ describe('InfluencerController', () => {
     };
   });
 
-  // getHealthのテスト
-  describe('getHealth', () => {
-    // ステータスOKが返ること
-    it('should return OK status', async () => {
-      // Arrange
-      const dateSpy = vi.spyOn(global, 'Date').mockImplementation(() => {
-        return {
-          toISOString: () => '2025-01-01T00:00:00.000Z',
-        } as any;
-      });
-
-      // Act
-      await influencerController.getHealth(req as Request, res as Response);
-
-      // Assert
-      expect(res.json).toHaveBeenCalledWith({
-        status: 'OK',
-        timestamp: '2025-01-01T00:00:00.000Z',
-      });
-
-      dateSpy.mockRestore();
-    });
-  });
-
   // getInfluencerStatsのテスト
   describe('getInfluencerStats', () => {
     // 有効なinfluencer IDで統計が返ること

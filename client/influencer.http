@@ -2,12 +2,6 @@
 ### ベースURL: http://localhost:3000
 @baseUrl = http://localhost:3000
 
-### ルートAPI情報取得
-GET {{baseUrl}}/
-
-### APIドキュメント取得
-GET {{baseUrl}}/api/docs
-
 ### ヘルスチェック
 GET {{baseUrl}}/api/health
 

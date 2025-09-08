@@ -105,22 +105,6 @@ describe('ImportController', () => {
       );
     });
 
-    // ファイルサイズが大きすぎる場合413を返すテスト
-    it('should return 413 if file is too large', async () => {
-      req.file = {
-        size: 60 * 1024 * 1024,
-        mimetype: 'text/csv',
-        originalname: 'large.csv',
-      } as any;
-
-      await importController.importCSV(req as Request, res as Response);
-
-      expect(res.status).toHaveBeenCalledWith(413);
-      expect(res.json).toHaveBeenCalledWith(
-        expect.objectContaining({ error: 'File too large' })
-      );
-    });
-
     // 正常にインポートできた場合201を返すテスト
     it('should call importService and return 201 on successful import', async () => {
       req.file = {

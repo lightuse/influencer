@@ -58,16 +58,7 @@ export class ImportController {
         return;
       }
 
-      if (req.file.size > 50 * 1024 * 1024) {
-        // 50MB
-        res.status(413).json({
-          error: 'File too large',
-          details: 'Maximum file size is 50MB',
-          timestamp: new Date().toISOString(),
-        });
-        return;
-      }
-
+      // ファイルサイズ上限チェックはmulterミドルウェアで実施済み
       const result = await this.importService.importCSV(
         req.file.buffer,
         req.file.originalname
@@ -76,14 +67,13 @@ export class ImportController {
       res.status(201).json({
         success: true,
         message: 'CSV import completed successfully',
-        stats: {
-          total_rows: result.totalProcessed,
-          processed_rows: result.totalProcessed,
-          skipped_rows: result.totalErrors,
-          inserted_rows: result.totalImported,
-          errors: [],
+        data: {
+          totalProcessed: result.totalProcessed,
+          totalImported: result.totalImported,
+          totalErrors: result.totalErrors,
+          fileName: result.fileName,
+          fileSize: result.fileSize,
         },
-        processing_time: 'N/A',
         timestamp: new Date().toISOString(),
       });
     } catch (error) {

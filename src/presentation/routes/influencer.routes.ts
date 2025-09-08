@@ -14,29 +14,26 @@ export function createInfluencerRoutes(
   // ヘルスチェック
   router.get('/health', controller.getHealth.bind(controller));
 
-  // インフルエンサー統計情報
-  router.get(
-    '/influencer/:influencerId/stats',
-    controller.getInfluencerStats.bind(controller)
-  );
-
   // いいね数上位インフルエンサー
   router.get(
-    '/influencers/top/likes',
+    '/top/likes',
     controller.getTopInfluencersByLikes.bind(controller)
   );
 
   // コメント数上位インフルエンサー
   router.get(
-    '/influencers/top/comments',
+    '/top/comments',
     controller.getTopInfluencersByComments.bind(controller)
   );
 
-  // 名詞分析
+  // インフルエンサー統計情報
   router.get(
-    '/influencer/:influencerId/nouns',
-    controller.getTopNouns.bind(controller)
+    '/:influencerId/stats',
+    controller.getInfluencerStats.bind(controller)
   );
+
+  // 名詞分析
+  router.get('/:influencerId/nouns', controller.getTopNouns.bind(controller));
 
   return router;
 }

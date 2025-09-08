@@ -8,22 +8,23 @@ import { TopInfluencer } from '../domain/entities.js';
  */
 export class InfluencerController {
   /**
+   * limitクエリパラメータをパースし、1～100の範囲でバリデーションする共通ヘルパー。
+   * @param req Expressリクエスト
+   * @returns 有効なlimit値（デフォルト10）、不正な場合はnull
+   */
+  private static parseAndValidateLimit(req: Request): number | null {
+    const parsedLimit = parseInt(req.query.limit as string);
+    const limit = isNaN(parsedLimit) ? 10 : parsedLimit;
+    if (limit < 1 || limit > 100) {
+      return null;
+    }
+    return limit;
+  }
+  /**
    * コントローラーのインスタンスを生成します。
    * @param influencerService インフルエンサーサービス
    */
   constructor(private influencerService: InfluencerService) {}
-
-  /**
-   * ヘルスチェックAPI。
-   * @param req Expressリクエスト
-   * @param res Expressレスポンス
-   */
-  async getHealth(req: Request, res: Response): Promise<void> {
-    res.json({
-      status: 'OK',
-      timestamp: new Date().toISOString(),
-    });
-  }
 
   /**
    * インフルエンサー統計情報取得API。
@@ -74,10 +75,8 @@ export class InfluencerController {
    */
   async getTopInfluencersByLikes(req: Request, res: Response): Promise<void> {
     try {
-      const parsedLimit = parseInt(req.query.limit as string);
-      const limit = isNaN(parsedLimit) ? 10 : parsedLimit;
-
-      if (limit < 1 || limit > 100) {
+      const limit = InfluencerController.parseAndValidateLimit(req);
+      if (limit === null) {
         res.status(400).json({
           error: 'Invalid limit parameter',
           details: 'Limit must be between 1 and 100',
@@ -87,7 +86,6 @@ export class InfluencerController {
 
       const results =
         await this.influencerService.getTopInfluencersByLikes(limit);
-
       res.json({
         limit,
         results: results.map((r: TopInfluencer) => ({
@@ -115,10 +113,8 @@ export class InfluencerController {
     res: Response
   ): Promise<void> {
     try {
-      const parsedLimit = parseInt(req.query.limit as string);
-      const limit = isNaN(parsedLimit) ? 10 : parsedLimit;
-
-      if (limit < 1 || limit > 100) {
+      const limit = InfluencerController.parseAndValidateLimit(req);
+      if (limit === null) {
         res.status(400).json({
           error: 'Invalid limit parameter',
           details: 'Limit must be between 1 and 100',
@@ -128,7 +124,6 @@ export class InfluencerController {
 
       const results =
         await this.influencerService.getTopInfluencersByComments(limit);
-
       res.json({
         limit,
         results: results.map((r: TopInfluencer) => ({
@@ -145,11 +140,20 @@ export class InfluencerController {
     }
   }
 
+  /**
+   * インフルエンサーの投稿から名詞の出現回数ランキングを取得します。
+   *
+   * 指定したインフルエンサーIDの全投稿を解析し、最も多く使われている名詞を出現回数順に返します。
+   * 返却する名詞数はクエリパラメータ`limit`で指定できます（デフォルト: 10、最大: 100）。
+   *
+   * @param req - Expressのリクエストオブジェクト。ルートパラメータとして`influencerId`、クエリパラメータとして`limit`を受け取ります。
+   * @param res - Expressのレスポンスオブジェクト。名詞ランキングまたはエラーメッセージをJSONで返します。
+   * @returns void
+   */
   async getTopNouns(req: Request, res: Response): Promise<void> {
     try {
       const influencerId = parseInt(req.params.influencerId);
-      const parsedLimit = parseInt(req.query.limit as string);
-      const limit = isNaN(parsedLimit) ? 10 : parsedLimit;
+      const limit = InfluencerController.parseAndValidateLimit(req);
 
       if (isNaN(influencerId)) {
         res.status(400).json({
@@ -159,7 +163,7 @@ export class InfluencerController {
         return;
       }
 
-      if (limit < 1 || limit > 100) {
+      if (limit === null) {
         res.status(400).json({
           error: 'Invalid limit parameter',
           details: 'Limit must be between 1 and 100',
