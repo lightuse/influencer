@@ -7,6 +7,7 @@ import {
 
 const BATCH_SIZE = 500;
 
+// 統計情報取得や上位インフルエンサー取得のgroupBy結果の型
 type GroupByResult = {
   influencerId: number;
   _avg: {
@@ -16,7 +17,7 @@ type GroupByResult = {
   _count: number;
 };
 
-// Minimal interface for influencerPost delegate for type-safe mocking
+// PrismaのInfluencerPostモデルに対応する最小限のDelegateインターフェース
 export interface MinimalInfluencerPostDelegate {
   create: (args: {
     data: Omit<InfluencerPost, 'id' | 'createdAt'>;
@@ -124,18 +125,7 @@ export class PrismaInfluencerPostRepository
       data: { ...data },
     });
 
-    return {
-      id: result.id,
-      influencerId: result.influencerId,
-      postId: result.postId,
-      shortcode: result.shortcode,
-      likes: result.likes,
-      comments: result.comments,
-      thumbnail: result.thumbnail,
-      text: result.text,
-      postDate: result.postDate,
-      createdAt: result.createdAt,
-    };
+    return result;
   }
 
   /**
@@ -148,18 +138,7 @@ export class PrismaInfluencerPostRepository
       where: { influencerId },
     });
 
-    return results.map((result: InfluencerPost) => ({
-      id: result.id,
-      influencerId: result.influencerId,
-      postId: result.postId,
-      shortcode: result.shortcode ?? undefined,
-      likes: result.likes,
-      comments: result.comments,
-      thumbnail: result.thumbnail ?? undefined,
-      text: result.text ?? undefined,
-      postDate: result.postDate ?? undefined,
-      createdAt: result.createdAt,
-    }));
+    return results;
   }
 
   /**
