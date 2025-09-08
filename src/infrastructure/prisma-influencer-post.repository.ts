@@ -4,6 +4,16 @@ import {
   InfluencerStats,
   TopInfluencer,
 } from '../domain/entities.js';
+
+type GroupByResult = {
+  influencerId: number;
+  _avg: {
+    likes?: number;
+    comments?: number | null;
+  };
+  _count: number;
+};
+
 // Minimal interface for influencerPost delegate for type-safe mocking
 export interface MinimalInfluencerPostDelegate {
   create: (args: {
@@ -56,7 +66,9 @@ export class PrismaInfluencerPostRepository
   /**
    * PrismaのDecimalやnumberをnumber型に変換するユーティリティ。
    */
-  private static toNum(val: any): number {
+  private static toNum(
+    val: number | { toNumber(): number } | null | undefined
+  ): number {
     if (val == null) return 0;
     if (typeof val === 'number') return val;
     if (typeof val.toNumber === 'function') return val.toNumber();
@@ -111,11 +123,11 @@ export class PrismaInfluencerPostRepository
    * @returns 投稿データ配列
    */
   async findByInfluencerId(influencerId: number): Promise<InfluencerPost[]> {
-    const results = await this.prisma.influencerPost.findMany({
+    const results = (await this.prisma.influencerPost.findMany({
       where: { influencerId },
-    });
+    })) as InfluencerPost[];
 
-    return results.map((result: any) => ({
+    return results.map((result: InfluencerPost) => ({
       id: result.id,
       influencerId: result.influencerId,
       postId: result.postId,
@@ -178,7 +190,7 @@ export class PrismaInfluencerPostRepository
       take: limit,
     });
 
-    return results.map((result: any) => ({
+    return results.map((result: GroupByResult) => ({
       influencerId: result.influencerId,
       avgLikes: result._avg.likes ?? 0,
       postCount: result._count,
@@ -205,7 +217,7 @@ export class PrismaInfluencerPostRepository
       take: limit,
     });
 
-    return results.map((result: any) => ({
+    return results.map((result: GroupByResult) => ({
       influencerId: result.influencerId,
       avgComments: result._avg.comments ?? 0,
       postCount: result._count,
@@ -227,7 +239,7 @@ export class PrismaInfluencerPostRepository
       where: { postId: { in: postIds } },
       select: { postId: true },
     });
-    const existingIds = new Set((existing as any[]).map((e: any) => e.postId));
+    const existingIds = new Set(existing.map(e => e.postId));
 
     const toCreate = posts.filter(p => !existingIds.has(p.postId));
     const skipped = posts.filter(p => existingIds.has(p.postId));
