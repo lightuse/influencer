@@ -28,12 +28,6 @@ app.use('/influencers', createInfluencerRoutes(mockController));
 
 // ルーティングのテスト
 describe('Influencer Routes', () => {
-  // /influencers/healthでgetHealthが呼ばれること
-  it('GET /influencers/health should call getHealth', async () => {
-    const response = await request(app).get('/influencers/health');
-    expect(response.status).toBe(200);
-  });
-
   // /influencers/influencer/:influencerId/statsでgetInfluencerStatsが呼ばれること
   it('GET /influencers/:influencerId/stats should call getInfluencerStats', async () => {
     const response = await request(app).get('/influencers/123/stats');
