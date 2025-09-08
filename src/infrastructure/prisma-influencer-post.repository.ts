@@ -99,10 +99,16 @@ export class PrismaInfluencerPostRepository
       return null;
     }
 
+    function toNum(val: any) {
+      if (val == null) return 0;
+      if (typeof val === 'number') return val;
+      if (typeof val.toNumber === 'function') return val.toNumber();
+      return Number(val) || 0;
+    }
     return {
       influencerId,
-      avgLikes: result._avg.likes?.toNumber() ?? 0,
-      avgComments: result._avg.comments?.toNumber() ?? 0,
+      avgLikes: toNum(result._avg.likes),
+      avgComments: toNum(result._avg.comments),
       postCount: result._count,
     };
   }
@@ -162,19 +168,33 @@ export class PrismaInfluencerPostRepository
   }
 
   /**
-   * 投稿データを一括で作成します。
+   * 投稿データを一括で作成し、作成・スキップされた投稿を返します。
    * @param posts 作成する投稿データ配列（id, createdAt除く）
-   * @returns 作成された件数
+   * @returns { created, skipped } 作成・スキップされた投稿データ配列
    */
-  async bulkCreate(
-    posts: Omit<InfluencerPost, 'id' | 'createdAt'>[]
-  ): Promise<number> {
-    const result = await this.prisma.influencerPost.createMany({
-      data: posts,
-      skipDuplicates: true,
+  async bulkCreate(posts: Omit<InfluencerPost, 'id' | 'createdAt'>[]): Promise<{
+    created: Omit<InfluencerPost, 'id' | 'createdAt'>[];
+    skipped: Omit<InfluencerPost, 'id' | 'createdAt'>[];
+  }> {
+    // 既存のpostIdを取得
+    const postIds = posts.map(p => p.postId);
+    const existing = await this.prisma.influencerPost.findMany({
+      where: { postId: { in: postIds } },
+      select: { postId: true },
     });
+    const existingIds = new Set(existing.map(e => e.postId));
 
-    return result.count;
+    const toCreate = posts.filter(p => !existingIds.has(p.postId));
+    const skipped = posts.filter(p => existingIds.has(p.postId));
+
+    if (toCreate.length > 0) {
+      await this.prisma.influencerPost.createMany({
+        data: toCreate,
+        skipDuplicates: true, // 保険として残す
+      });
+    }
+
+    return { created: toCreate, skipped };
   }
 
   /**

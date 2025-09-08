@@ -144,10 +144,11 @@ describe('PrismaInfluencerPostRepository', () => {
 
   // 複数投稿を一括作成できること
   it('should bulk create posts', async () => {
-    const count = await repo.bulkCreate([
+    const result = await repo.bulkCreate([
       { influencerId: 1, postId: '1', likes: 10, comments: 2 },
     ]);
-    expect(count).toBe(1);
+    expect(result.created.length).toBe(1);
+    expect(result.skipped.length).toBe(0);
   });
 
   // 投稿の存在確認ができること
