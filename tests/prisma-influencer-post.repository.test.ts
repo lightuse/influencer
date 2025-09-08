@@ -1,19 +1,26 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { PrismaInfluencerPostRepository } from '../src/infrastructure/prisma-influencer-post.repository.js';
 
-// PrismaClientのモック（テスト用）
-type CreateArgs = { data: any };
-type FindManyArgs = { where: any };
-type AggregateArgs = { where: any };
-type GroupByArgs = {
-  by: any;
-  _avg?: any;
-  _count?: any;
-  orderBy?: any;
-  take?: any;
+// テスト用のInfluencerPost型（必要なフィールドのみ）
+type InfluencerPost = {
+  id?: number;
+  influencerId: number;
+  postId: string;
+  likes: number;
+  comments: number;
+  createdAt?: Date;
 };
-type CreateManyArgs = { data: any[] };
-type FindUniqueArgs = { where: { postId: string } };
+type CreateArgs = { data: InfluencerPost };
+type FindManyArgs = { where: { influencerId?: number } };
+type AggregateArgs = { where: { influencerId?: number } };
+type GroupByArgs = {
+  by: string[];
+  _avg?: { [key: string]: true };
+  _count?: boolean | { [key: string]: true };
+  orderBy?: { _avg?: { [key: string]: 'asc' | 'desc' } };
+  take?: number;
+};
+type CreateManyArgs = { data: InfluencerPost[] };
 
 // テスト用のモッククラス
 // 各メソッドはPrismaの挙動を模倣
@@ -148,9 +155,12 @@ describe('PrismaInfluencerPostRepository', () => {
   });
 
   // コメント数がnullの場合も0.00として扱うこと
+  const LIMIT_INCLUDING_NULL_COMMENTS = 2; // 2件取得してnullコメントも含める意図を明示
   it('should handle null avgComments when getting top influencers by comments', async () => {
-    const top = await repo.getTopInfluencersByComments(2); // Get top 2 to include the one with null comments
-    expect(top.length).toBe(2);
+    const top = await repo.getTopInfluencersByComments(
+      LIMIT_INCLUDING_NULL_COMMENTS
+    );
+    expect(top.length).toBe(LIMIT_INCLUDING_NULL_COMMENTS);
     const influencerWithNullComments = top.find(i => i.influencerId === 999);
     expect(influencerWithNullComments).toBeTruthy();
     expect(influencerWithNullComments?.avgComments).toBe(0);
