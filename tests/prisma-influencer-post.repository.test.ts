@@ -1,12 +1,12 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 
-interface MinimalPrisma {
-  influencerPost: MinimalInfluencerPostDelegate;
-}
 import {
   PrismaInfluencerPostRepository,
   MinimalInfluencerPostDelegate,
 } from '../src/infrastructure/prisma-influencer-post.repository.js';
+interface MinimalPrisma {
+  influencerPost: MinimalInfluencerPostDelegate;
+}
 // 2件取得してnullコメントも含める意図を明示
 const LIMIT_INCLUDING_NULL_COMMENTS = 2;
 // 投稿IDでユニーク検索するための型

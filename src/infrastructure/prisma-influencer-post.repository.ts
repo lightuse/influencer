@@ -20,7 +20,18 @@ type GroupByResult = {
 export interface MinimalInfluencerPostDelegate {
   create: (args: {
     data: Omit<InfluencerPost, 'id' | 'createdAt'>;
-  }) => Promise<InfluencerPost>;
+  }) => Promise<{
+    id: number;
+    influencerId: number;
+    postId: string;
+    shortcode?: string;
+    likes: number;
+    comments: number;
+    thumbnail?: string;
+    text?: string;
+    postDate?: Date;
+    createdAt: Date;
+  }>;
   findMany: (args: {
     where: { influencerId?: number; postId?: { in: string[] } };
     select?: { postId?: boolean };
