@@ -5,6 +5,8 @@ import {
   TopInfluencer,
 } from '../domain/entities.js';
 
+const BATCH_SIZE = 500;
+
 type GroupByResult = {
   influencerId: number;
   _avg: {
@@ -230,12 +232,17 @@ export class PrismaInfluencerPostRepository
     created: Omit<InfluencerPost, 'id' | 'createdAt'>[];
     skipped: Omit<InfluencerPost, 'id' | 'createdAt'>[];
   }> {
-    // 既存のpostIdを取得
+    // 既存のpostIdを取得（バッチ処理で大きなin句を回避）
     const postIds = posts.map(p => p.postId);
-    const existing = await this.prisma.influencerPost.findMany({
-      where: { postId: { in: postIds } },
-      select: { postId: true },
-    });
+    const existing: { postId: string }[] = [];
+    for (let i = 0; i < postIds.length; i += BATCH_SIZE) {
+      const batch = postIds.slice(i, i + BATCH_SIZE);
+      const batchExisting = await this.prisma.influencerPost.findMany({
+        where: { postId: { in: batch } },
+        select: { postId: true },
+      });
+      existing.push(...batchExisting);
+    }
     const existingIds = new Set(existing.map(e => e.postId));
 
     const toCreate = posts.filter(p => !existingIds.has(p.postId));
