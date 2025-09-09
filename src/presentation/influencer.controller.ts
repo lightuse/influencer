@@ -36,6 +36,17 @@ export class InfluencerController {
    * limitクエリパラメータをパースし、1～100の範囲でバリデーションする共通ヘルパー。
    * @param req Expressリクエスト
    * @returns 有効なlimit値（デフォルト10）、不正な場合はnull
+   * @remarks
+   * クエリパラメータは文字列として渡されるため、整数に変換してから範囲チェックを行います。
+   * 1未満または100超の値、数値でない場合はnullを返します。
+   * デフォルト値は10です。
+   * このメソッドはgetTopInfluencersByLikes、getTopInfluencersByComments、
+   * getTopNounsの3つのエンドポイントで共通して使用されます。
+   * これにより、各エンドポイントで同じバリデーションロジックを繰り返す必要がなくなり、
+   * コードの重複を防ぎます。
+   * また、将来的にバリデーションルールを変更する場合も、このメソッドだけ修正すればよく、
+   * 保守性が向上します。
+   * @returns {number | null} 有効なlimit値（デフォルト10）、不正な場合はnull
    */
   private static parseAndValidateLimit(req: Request): number | null {
     const parsedLimit = parseInt(req.query.limit as string);
@@ -55,6 +66,7 @@ export class InfluencerController {
    * インフルエンサー統計情報取得API。
    * @param req Expressリクエスト
    * @param res Expressレスポンス
+   * @returns void
    */
   async getInfluencerStats(req: Request, res: Response): Promise<void> {
     try {
@@ -99,6 +111,7 @@ export class InfluencerController {
    * いいね数ランキング取得API。
    * @param req Expressリクエスト
    * @param res Expressレスポンス
+   * @returns void
    */
   async getTopInfluencersByLikes(req: Request, res: Response): Promise<void> {
     try {
@@ -131,7 +144,7 @@ export class InfluencerController {
    * コメント数ランキング取得API。
    * @param req Expressリクエスト
    * @param res Expressレスポンス
-   * @returns
+   * @returns void
    */
   async getTopInfluencersByComments(
     req: Request,
