@@ -42,6 +42,8 @@ jobs:
           node-version-file: package.json
           working-directory: .
       - name: Build MkDocs
-        run: mkdocs build -f docs/mkdocs.yml
+        run: |
+          source .venv/bin/activate
+          mkdocs build -f docs/mkdocs.yml
       - name: Deploy MkDocs
         run: mkdocs gh-deploy --force
