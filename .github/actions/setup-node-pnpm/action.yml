@@ -19,11 +19,6 @@ runs:
         node-version-file: ${{ inputs.node-version-file }}
         cache: 'pnpm'
 
-    - name: github login
-      shell: bash
-      run: echo -e "\n//npm.pkg.github.com/:_authToken=${{ github.token }}" >> .npmrc
-      working-directory: ${{ inputs.working-directory }}
-
     - name: Install Node.js dependencies
       shell: bash
       run: pnpm install
