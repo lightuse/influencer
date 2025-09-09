@@ -55,8 +55,7 @@
     "kuromoji": "^0.1.2",
     "multer": "^2.0.2",
     "pg": "^8.11.3",
-    "prisma": "^6.15.0",
-    "request": "^2.88.2"
+    "prisma": "^6.15.0"
   },
   "devDependencies": {
     "@openapitools/openapi-generator-cli": "^2.23.1",
