@@ -145,7 +145,7 @@ describe('PrismaInfluencerPostRepository', () => {
     expect(post.id).toBe(1);
     expect(post.influencerId).toBe(1);
   });
-  // 投稿を作成できること
+  // influencerIdで投稿を検索できること
   it('should find posts by influencerId', async () => {
     const posts = await repo.findByInfluencerId(1);
     expect(posts.length).toBeGreaterThan(0);
@@ -157,7 +157,7 @@ describe('PrismaInfluencerPostRepository', () => {
     expect(stats).toBeTruthy();
     expect(stats?.avgLikes).toBe(10);
   });
-  // influencerの統計情報を取得できること（投稿がない場合nullを返す）
+  // 投稿がない場合はnullを返すこと
   it('should return null for stats if no posts', async () => {
     const stats = await repo.getInfluencerStats(999);
     expect(stats).toBeNull();
@@ -198,7 +198,7 @@ describe('PrismaInfluencerPostRepository', () => {
     const notExists = await repo.exists('999');
     expect(notExists).toBe(false);
   });
-  // いいね数がnullのときにトップインフルエンサーを取得できること
+  // コメント数がnullの場合も含めてトップインフルエンサーを取得できること
   it('should handle null avgComments when getting top influencers by comments', async () => {
     const top = await repo.getTopInfluencersByComments(
       LIMIT_INCLUDING_NULL_COMMENTS
