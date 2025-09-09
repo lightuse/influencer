@@ -44,17 +44,15 @@ TypeScript, pnpm, TypeSpec を使用した **設計駆動開発** によるイ�
 # 1. 依存関係をインストール
 pnpm install
 
-# 2. コード生成とマイグレーションを実行
-pnpm run prebuild
-pnpm run db:push
-
-# 3. Dockerコンテナを起動
+# 2. Dockerコンテナを起動
 pnpm run docker:up
 
-# 4. (オプション) サンプルCSVデータをインポート
-pnpm run cli:import
+# 3. コード生成とマイグレーションを実行
+pnpm run prebuild
+pnpm run db:push
+pnpm run build
 
-# 5. 動作確認
+# 4. 動作確認
 curl http://localhost:3000/api/health
 ```
 

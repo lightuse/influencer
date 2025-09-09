@@ -1,14 +1,19 @@
 import { defineConfig } from 'vite';
+import tsconfigPaths from 'vite-tsconfig-paths';
 
 export default defineConfig({
+  plugins: [tsconfigPaths()],
   build: {
     target: 'node20',
     outDir: 'dist',
     lib: {
-      entry: './src/app.ts',
+      entry: {
+        app: './src/app.ts',
+        'cli/import-csv': './cli/import-csv.ts'
+      },
       name: 'app',
-      formats: ['cjs'],
-      fileName: () => 'src/app.cjs',
+      formats: ['es'],
+      fileName: (format, entryName) => `${entryName}.js`,
     },
     rollupOptions: {
       external: [
