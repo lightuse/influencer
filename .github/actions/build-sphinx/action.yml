@@ -15,7 +15,7 @@ runs:
       shell: bash
       working-directory: ${{ inputs.working-directory }}
     - name: Activate venv
-      run: source .venv/bin/activate
+      run: source "${GITHUB_WORKSPACE}/.venv/bin/activate"
       shell: bash
       working-directory: ${{ inputs.working-directory }}
     - name: Build Sphinx Docs
