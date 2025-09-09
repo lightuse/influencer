@@ -14,6 +14,25 @@ type TopInfluencerResponse = components['schemas']['TopInfluencer'];
  */
 export class InfluencerController {
   /**
+   * ドメインモデルからレスポンスモデルへの変換ヘルパー。
+   */
+  private static toTopInfluencerResponse(
+    influencer: DomainTopInfluencer
+  ): TopInfluencerResponse {
+    return {
+      influencer_id: influencer.influencerId,
+      avg_likes:
+        influencer.avgLikes !== undefined
+          ? String(influencer.avgLikes)
+          : undefined,
+      avg_comments:
+        influencer.avgComments !== undefined
+          ? String(influencer.avgComments)
+          : undefined,
+      post_count: influencer.postCount,
+    };
+  }
+  /**
    * limitクエリパラメータをパースし、1～100の範囲でバリデーションする共通ヘルパー。
    * @param req Expressリクエスト
    * @returns 有効なlimit値（デフォルト10）、不正な場合はnull
@@ -97,18 +116,8 @@ export class InfluencerController {
 
       const response: TopInfluencersResponse = {
         limit,
-        results: results.map(
-          (r: DomainTopInfluencer): TopInfluencerResponse => ({
-            influencer_id: r.influencerId,
-            avg_likes:
-              r.avgLikes !== undefined ? String(r.avgLikes) : undefined,
-            avg_comments:
-              r.avgComments !== undefined ? String(r.avgComments) : undefined,
-            post_count: r.postCount,
-          })
-        ),
+        results: results.map(InfluencerController.toTopInfluencerResponse),
       };
-
       res.json(response);
     } catch (error) {
       res.status(500).json({
@@ -143,18 +152,8 @@ export class InfluencerController {
 
       const response: TopInfluencersResponse = {
         limit,
-        results: results.map(
-          (r: DomainTopInfluencer): TopInfluencerResponse => ({
-            influencer_id: r.influencerId,
-            avg_likes:
-              r.avgLikes !== undefined ? String(r.avgLikes) : undefined,
-            avg_comments:
-              r.avgComments !== undefined ? String(r.avgComments) : undefined,
-            post_count: r.postCount,
-          })
-        ),
+        results: results.map(InfluencerController.toTopInfluencerResponse),
       };
-
       res.json(response);
     } catch (error) {
       res.status(500).json({

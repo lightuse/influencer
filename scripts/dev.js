@@ -9,10 +9,10 @@
 
 // 子プロセスの生成に使用
 import { spawn } from 'child_process';
-// ファイル監視に使用
 import { watch } from 'fs';
-// パス解決に使用
 import { resolve } from 'path';
+import fs from 'fs';
+import join from 'path';
 
 // サーバープロセスを保持する変数
 let serverProcess = null;
@@ -25,9 +25,7 @@ function startServer() {
   }
 
   console.log('🚀 Starting server...');
-  const fs = require('fs');
-  const path = require('path');
-  const defaultAppPath = path.join(__dirname, '../dist/src/app.js');
+  const defaultAppPath = join.join(__dirname, '../dist/src/app.js');
   const appPath = process.env.APP_PATH || process.argv[2] || defaultAppPath;
 
   if (!fs.existsSync(appPath)) {

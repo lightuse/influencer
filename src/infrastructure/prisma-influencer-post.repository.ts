@@ -12,8 +12,8 @@ const BATCH_SIZE = 500;
 type GroupByResult = {
   influencerId: number;
   _avg: {
-    likes?: number | null;
-    comments?: number | null;
+    likes: number | null;
+    comments: number | null;
   };
   _count: number;
 };

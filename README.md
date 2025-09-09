@@ -16,17 +16,19 @@ TypeScript, pnpm, TypeSpec を使用した **設計駆動開発** によるイ�
 
 ## 🏗️ 技術スタック
 
-| カテゴリ          | 技術                                 | バージョン |
-| ----------------- | ------------------------------------ | ---------- |
-| 言語・ランタイム  | **TypeScript** (^5.9), Node.js (20+) |
-| スキーマ定義      | **TypeSpec** (^1.3)                  |
-| パッケージ管理    | **pnpm** (9.7)                       |
-| Webフレームワーク | **Express** (^4.18)                  |
-| ORM               | **Prisma** (^6.15)                   |
-| データベース      | **PostgreSQL** (15+)                 |
-| テスト            | **Vitest** (^3.2)                    |
-| コンテナ          | **Docker**, Docker Compose           |
-| テキスト分析      | **Kuromoji.js** (^0.1)               |
+| カテゴリ          | 技術            | バージョン |
+| ----------------- | --------------- | ---------- |
+| 言語・ランタイム  | **TypeScript**  | 5.9.x      |
+|                   | Node.js         | 20+        |
+| スキーマ定義      | **TypeSpec**    | 1.3.x      |
+| パッケージ管理    | **pnpm**        | 9.7.x      |
+| Webフレームワーク | **Express**     | 4.18.x     |
+| ORM               | **Prisma**      | 6.15.x     |
+| データベース      | **PostgreSQL**  | 15+        |
+| テスト            | **Vitest**      | 3.2.x      |
+| コンテナ          | **Docker**      |            |
+|                   | Docker Compose  |            |
+| テキスト分析      | **Kuromoji.js** | 0.1.x      |
 
 ## 🚀 クイックスタート
 
@@ -36,7 +38,7 @@ TypeScript, pnpm, TypeSpec を使用した **設計駆動開発** によるイ�
 - pnpm 9+
 - Docker & Docker Compose
 
-### Docker Composeでの起動 (推奨)
+### Docker Composeでの起動
 
 ```bash
 # 1. 依存関係をインストール
@@ -58,15 +60,15 @@ curl http://localhost:3000/api/health
 
 ## 📡 APIエンドポイント
 
-| Method | Endpoint                        | 説明                              |
-| :----- | :------------------------------ | :-------------------------------- |
-| `GET`  | `/api/health`                   | ヘルスチェック                    |
-| `GET`  | `/api/influencers/{id}/stats`   | 特定インフルエンサーの統計情報    |
-| `GET`  | `/api/influencers/top/likes`    | いいね数ランキング                |
-| `GET`  | `/api/influencers/top/comments` | コメント数ランキング              |
-| `GET`  | `/api/influencers/{id}/nouns`   | 投稿の名詞分析結果                |
-| `POST` | `/api/import/csv`               | CSVファイルによるデータインポート |
-| `GET`  | `/api/import/status`            | インポート機能のステータス確認    |
+| Method | Endpoint                                         | 説明                                                                                      |
+| :----- | :----------------------------------------------- | :---------------------------------------------------------------------------------------- |
+| `GET`  | `/api/health`                                    | ヘルスチェック                                                                            |
+| `GET`  | `/api/influencers/{influencerId}/stats`          | 特定インフルエンサーの統計情報                                                            |
+| `GET`  | `/api/influencers/top/likes?limit=10`            | いいね数ランキング（limit: 1-100）                                                        |
+| `GET`  | `/api/influencers/top/comments?limit=10`         | コメント数ランキング（limit: 1-100）                                                      |
+| `GET`  | `/api/influencers/{influencerId}/nouns?limit=10` | 投稿の名詞分析結果（limit: 1-100）                                                        |
+| `POST` | `/api/import/csv`                                | CSVファイルによるデータインポート（multipart/form-data, フィールド名: csvFile, 最大50MB） |
+| `GET`  | `/api/import/status`                             | インポート機能のステータス確認                                                            |
 
 ### 使用例
 
@@ -74,8 +76,20 @@ curl http://localhost:3000/api/health
 # いいね数トップ3を取得
 curl "http://localhost:3000/api/influencers/top/likes?limit=3"
 
-# CSVファイルをインポート
-curl -X POST -F "csvFile=@./data/t_influencer_posts_sample.csv" http://localhost:3000/api/import/csv
+# コメント数トップ5を取得
+curl "http://localhost:3000/api/influencers/top/comments?limit=5"
+
+# 特定インフルエンサーの統計情報を取得
+curl "http://localhost:3000/api/influencers/1/stats"
+
+# 特定インフルエンサーの名詞分析（上位10件）
+curl "http://localhost:3000/api/influencers/1/nouns?limit=10"
+
+# CSVファイルをインポート（サンプルデータ）
+curl -X POST -F "csvFile=@./data/t_influencer_posts_202401121334.csv" http://localhost:3000/api/import/csv
+
+# インポートステータス確認
+curl http://localhost:3000/api/import/status
 ```
 
 ## 🔄 開発ワークフロー
@@ -116,11 +130,9 @@ curl -X POST -F "csvFile=@./data/t_influencer_posts_sample.csv" http://localhost
 │   └── infrastructure/ # インフラストラクチャ層 (DB実装, 外部API)
 ├── tests/            # テストコード
 ├── data/             # サンプルデータ
-├── docs/             # TypeDocで生成されたドキュメント
+├── docs/             # ドキュメント静的サイト出力（mkdocs, sphinx, typedoc等）
 └── ...               # 設定ファイル (package.json, tsconfig.jsonなど)
 ├── tsp-output/       # TypeSpecのOpenAPI等自動生成物
-├── site/             # ドキュメント静的サイト出力（mkdocs, sphinx, typedoc等）
-├── .venv/            # Python仮想環境（必要な場合、git管理外）
 ```
 
 ## 🌍 環境変数
@@ -146,3 +158,11 @@ curl -X POST -F "csvFile=@./data/t_influencer_posts_sample.csv" http://localhost
 - `tsp-output/` や `site/` などの自動生成物はgit管理外です
 - Python仮想環境（.venv/）は各自作成し、git管理しません
 - 依存バージョンやコマンドは `package.json` などで随時確認してください
+
+## 📑 CSVインポート仕様
+
+- エンドポイント: `POST /api/import/csv`（multipart/form-data, フィールド名: csvFile, 最大50MB）
+- 必須カラム: `influencer_id`, `post_id`, `likes`, `comments`
+- 任意カラム: `shortcode`, `thumbnail`, `text`, `post_date`
+- 既存post_idはスキップ（重複登録なし）
+- インポート結果は件数・エラー数等をJSONで返却
