@@ -2,10 +2,6 @@ name: 'Build Sphinx Documentation'
 description: 'Builds Sphinx documentation from a specified directory.'
 
 inputs:
-  working-directory:
-    description: 'Directory where Sphinx project is located.'
-    required: true
-    default: '.'
   requirements-file:
     description: 'Path to the Python requirements file for Sphinx.'
     required: false
@@ -17,8 +13,6 @@ runs:
     - name: Install Sphinx Python dependencies
       run: uv pip install -r ${{ inputs.requirements-file }}
       shell: bash
-      working-directory: ${{ inputs.working-directory }}
     - name: Build Sphinx Docs
       run: sphinx-build -b html docs/sphinx/ docs/mkdocs_content/sphinx/
       shell: bash
-      working-directory: ${{ inputs.working-directory }}
