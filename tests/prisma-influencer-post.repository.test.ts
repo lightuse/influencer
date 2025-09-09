@@ -75,14 +75,14 @@ describe('PrismaInfluencerPostRepository', () => {
 
     // グループ化・集計のモック
     Object.defineProperty(prismaMock.influencerPost, 'groupBy', {
-      value: ({ by, orderBy, take }: any) => {
+      value: ({ by, orderBy, take }: Prisma.InfluencerPostGroupByArgs) => {
         let result;
         if (
           by &&
           by.includes('influencerId') &&
           orderBy &&
-          orderBy._avg &&
-          orderBy._avg.comments === 'desc' &&
+          (orderBy as any)._avg &&
+          (orderBy as any)._avg.comments === 'desc' &&
           take === 2
         ) {
           result = [
