@@ -101,6 +101,7 @@ async function importCSV() {
       } catch {
         postId = null;
       }
+      // influencer_idが整数かつ正の数、postIdがnullでない場合のみ有効とみなす
       const influencerId = parseInt(row.influencer_id, 10);
       if (
         Number.isInteger(influencerId) &&
@@ -109,7 +110,7 @@ async function importCSV() {
       ) {
         const post = {
           influencerId,
-          postId: postId.toString(),
+          postId: String(postId),
           shortcode: row.shortcode || null,
           likes: parseInt(row.likes, 10) || 0,
           comments: parseInt(row.comments, 10) || 0,

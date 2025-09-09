@@ -12,7 +12,7 @@ import { spawn } from 'child_process';
 import { watch } from 'fs';
 import { resolve } from 'path';
 import fs from 'fs';
-import join from 'path';
+import { join } from 'path';
 
 // サーバープロセスを保持する変数
 let serverProcess = null;
@@ -25,7 +25,7 @@ function startServer() {
   }
 
   console.log('🚀 Starting server...');
-  const defaultAppPath = join.join(__dirname, '../dist/src/app.js');
+  const defaultAppPath = join(__dirname, '../dist/src/app.js');
   const appPath = process.env.APP_PATH || process.argv[2] || defaultAppPath;
 
   if (!fs.existsSync(appPath)) {
