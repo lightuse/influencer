@@ -14,10 +14,6 @@ runs:
       run: uv pip install -r requirements.txt
       shell: bash
       working-directory: ${{ inputs.working-directory }}
-    - name: Activate venv
-      run: source "${GITHUB_WORKSPACE}/.venv/bin/activate"
-      shell: bash
-      working-directory: ${{ inputs.working-directory }}
     - name: Build Sphinx Docs
       run: sphinx-build -b html . "${GITHUB_WORKSPACE}/mkdocs_content/sphinx/"
       shell: bash
