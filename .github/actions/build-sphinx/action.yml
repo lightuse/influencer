@@ -1,17 +1,14 @@
 name: 'Build Sphinx Documentation'
 description: 'Builds Sphinx documentation from a specified directory.'
 
-inputs:
-  requirements-file:
-    description: 'Path to the Python requirements file for Sphinx.'
-    required: false
-    default: 'requirements.txt'
-
 runs:
   using: 'composite'
   steps:
     - name: Install Sphinx Python dependencies
       run: uv pip install -r ${{ inputs.requirements-file }}
+      shell: bash
+    - name: Activate venv
+      run: source .venv/bin/activate
       shell: bash
     - name: Build Sphinx Docs
       run: sphinx-build -b html . "${GITHUB_WORKSPACE}/mkdocs_content/sphinx/"
