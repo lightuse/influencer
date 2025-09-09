@@ -15,6 +15,6 @@ runs:
       shell: bash
     - name: Build Sphinx Docs
       run: |
-        source ../../.venv/bin/activate
+        source "${GITHUB_WORKSPACE}/.venv/bin/activate"
         sphinx-build -b html . "${GITHUB_WORKSPACE}/mkdocs_content/sphinx/"
       shell: bash
