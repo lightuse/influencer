@@ -41,14 +41,6 @@ jobs:
         with:
           node-version-file: package.json
           working-directory: .
-      - name: Prepare MkDocs content directories
-        run: |
-          mkdir -p docs/mkdocs_content/sphinx_docs
-          mkdir -p docs/mkdocs_content/typedoc_docs
-      - name: Copy Sphinx Docs to MkDocs content
-        run: cp -r docs/sphinx/_build/html/. docs/mkdocs_content/sphinx_docs/
-      - name: Copy TypeDoc Docs to MkDocs content
-        run: cp -r docs/typedoc/. docs/mkdocs_content/typedoc_docs/
       - name: Build MkDocs
         run: mkdocs build -f docs/mkdocs.yml
       - name: Deploy MkDocs
