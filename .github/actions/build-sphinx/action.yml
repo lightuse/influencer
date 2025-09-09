@@ -1,0 +1,24 @@
+name: 'Build Sphinx Documentation'
+description: 'Builds Sphinx documentation from a specified directory.'
+
+inputs:
+  working-directory:
+    description: 'Directory where Sphinx project is located.'
+    required: true
+    default: '.'
+  requirements-file:
+    description: 'Path to the Python requirements file for Sphinx.'
+    required: false
+    default: 'requirements.txt'
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Install Sphinx Python dependencies
+      run: pip install -r ${{ inputs.requirements-file }}
+      shell: bash
+      working-directory: ${{ inputs.working-directory }}
+    - name: Build Sphinx Docs
+      run: sphinx-build -b html . _build/html
+      shell: bash
+      working-directory: ${{ inputs.working-directory }}
