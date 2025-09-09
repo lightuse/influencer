@@ -31,8 +31,6 @@ jobs:
         run: uv pip install -r docs/requirements.txt
       - name: Build Sphinx Documentation
         uses: ./.github/actions/build-sphinx
-        with:
-          working-directory: docs/sphinx
       - name: Install pnpm
         run: npm install -g pnpm@latest-10
       - name: Setup Node.js, pnpm, and Generate Typedoc
