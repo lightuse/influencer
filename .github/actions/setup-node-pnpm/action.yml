@@ -29,6 +29,11 @@ runs:
       run: pnpm install
       working-directory: ${{ inputs.working-directory }}
 
+    - name: Compile TypeSpec to OpenAPI
+      shell: bash
+      run: pnpm run typespec:compile
+      working-directory: ${{ inputs.working-directory }}
+
     - name: Generate API Types
       shell: bash
       run: pnpm run api:types
