@@ -29,6 +29,11 @@ runs:
       run: pnpm install
       working-directory: ${{ inputs.working-directory }}
 
+    - name: Generate API Types
+      shell: bash
+      run: pnpm run api:types
+      working-directory: ${{ inputs.working-directory }}
+
     - name: Generate Typedoc
       shell: bash
       run: pnpm run docs
