@@ -14,6 +14,8 @@ runs:
       run: uv pip install -r ${{ inputs.requirements-file }}
       shell: bash
     - name: Build Sphinx Docs
-      run: sphinx-build -b html . ../../mkdocs_content/sphinx/
+      run: |
+        source .venv/bin/activate
+        sphinx-build -b html . ../../mkdocs_content/sphinx/
       shell: bash
       working-directory: 'docs/sphinx'
