@@ -74,8 +74,8 @@ describe('PrismaInfluencerPostRepository', () => {
     );
 
     // グループ化・集計のモック
-    Object.defineProperty(prismaMock.influencerPost, 'groupBy', {
-      value: ({ by, orderBy, take }: Prisma.InfluencerPostGroupByArgs) => {
+    (prismaMock.influencerPost.groupBy as any).mockImplementation(
+      ({ by, orderBy, take }: Prisma.InfluencerPostGroupByArgs) => {
         let result;
         if (
           by &&
@@ -98,11 +98,9 @@ describe('PrismaInfluencerPostRepository', () => {
             { influencerId: 1, _avg: { likes: 10, comments: 2 }, _count: 1 },
           ];
         }
-        return result as unknown as ReturnType<
-          typeof prismaMock.influencerPost.groupBy
-        >;
-      },
-    });
+        return result as any;
+      }
+    );
 
     // 複数投稿作成のモック
     prismaMock.influencerPost.createMany.mockImplementation(
