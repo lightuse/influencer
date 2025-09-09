@@ -1,0 +1,234 @@
+<!DOCTYPE html><html class="default" lang="en" data-base="./"><head><meta charset="utf-8"/><meta http-equiv="x-ua-compatible" content="IE=edge"/><title>Influencer API Documentation</title><meta name="description" content="Documentation for Influencer API Documentation"/><meta name="viewport" content="width=device-width, initial-scale=1"/><link rel="stylesheet" href="assets/style.css"/><link rel="stylesheet" href="assets/highlight.css"/><script defer src="assets/main.js"></script><script async src="assets/icons.js" id="tsd-icons-script"></script><script async src="assets/search.js" id="tsd-search-script"></script><script async src="assets/navigation.js" id="tsd-nav-script"></script><script async src="assets/hierarchy.js" id="tsd-hierarchy-script"></script></head><body><script>document.documentElement.dataset.theme = localStorage.getItem("tsd-theme") || "os";document.body.style.display="none";setTimeout(() => window.app?app.showPage():document.body.style.removeProperty("display"),500)</script><header class="tsd-page-toolbar"><div class="tsd-toolbar-contents container"><a href="index.html" class="title">Influencer API Documentation</a><div id="tsd-toolbar-links"></div><button id="tsd-search-trigger" class="tsd-widget" aria-label="Search"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><use href="assets/icons.svg#icon-search"></use></svg></button><dialog id="tsd-search" aria-label="Search"><input role="combobox" id="tsd-search-input" aria-controls="tsd-search-results" aria-autocomplete="list" aria-expanded="true" autocapitalize="off" autocomplete="off" placeholder="Search the docs" maxLength="100"/><ul role="listbox" id="tsd-search-results"></ul><div id="tsd-search-status" aria-live="polite" aria-atomic="true"><div>Preparing search index...</div></div></dialog><a href="#" class="tsd-widget menu" id="tsd-toolbar-menu-trigger" data-toggle="menu" aria-label="Menu"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><use href="assets/icons.svg#icon-menu"></use></svg></a></div></header><div class="container container-main"><div class="col-content"><div class="tsd-page-title"><h1>Influencer API Documentation</h1></div><div class="tsd-panel tsd-typography"><h1 id="🚀-influencer-posts-analysis-api" class="tsd-anchor-link">🚀 Influencer Posts Analysis API<a href="#🚀-influencer-posts-analysis-api" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h1><p>TypeScript, pnpm, TypeSpec を使用した <strong>設計駆動開発</strong> によるインフルエンサー投稿分析APIです。オニオンアーキテクチャを採用し、保守性と拡張性の高いコードベースを目指しています。</p>
+<h2 id="🌟-特徴" class="tsd-anchor-link">🌟 特徴<a href="#🌟-特徴" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h2><ul>
+<li><strong>設計駆動開発</strong>: <code>TypeSpec</code>でAPIスキーマを定義し、コードを自動生成。</li>
+<li><strong>クリーンな設計</strong>: <code>Onion Architecture</code>を採用し、関心事を分離。</li>
+<li><strong>統計・分析機能</strong>: インフルエンサーごとの平均いいね数や投稿数を分析。</li>
+<li><strong>ランキング機能</strong>: いいね数やコメント数に基づいたランキングを提供。</li>
+<li><strong>日本語テキスト分析</strong>: <code>Kuromoji.js</code>による形態素解析で、投稿から名詞を抽出・集計。</li>
+<li><strong>一括データ登録</strong>: <code>CSV</code>ファイルによるデータインポート機能。</li>
+<li><strong>型安全性</strong>: <code>TypeScript</code>と<code>Prisma</code>によるエンドツーエンドの型安全性を確保。</li>
+<li><strong>コンテナ対応</strong>: <code>Docker</code>と<code>Docker Compose</code>で環境構築を簡略化。</li>
+<li><strong>包括的なテスト</strong>: <code>Vitest</code>による単体・統合テストを整備。</li>
+</ul>
+<h2 id="🏗️-技術スタック" class="tsd-anchor-link">🏗️ 技術スタック<a href="#🏗️-技術スタック" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h2><table>
+<thead>
+<tr>
+<th>カテゴリ</th>
+<th>技術</th>
+<th>バージョン</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>言語・ランタイム</td>
+<td><strong>TypeScript</strong></td>
+<td>5.9.x</td>
+</tr>
+<tr>
+<td></td>
+<td>Node.js</td>
+<td>20+</td>
+</tr>
+<tr>
+<td>スキーマ定義</td>
+<td><strong>TypeSpec</strong></td>
+<td>1.3.x</td>
+</tr>
+<tr>
+<td>パッケージ管理</td>
+<td><strong>pnpm</strong></td>
+<td>9.7.x</td>
+</tr>
+<tr>
+<td>Webフレームワーク</td>
+<td><strong>Express</strong></td>
+<td>4.18.x</td>
+</tr>
+<tr>
+<td>ORM</td>
+<td><strong>Prisma</strong></td>
+<td>6.15.x</td>
+</tr>
+<tr>
+<td>データベース</td>
+<td><strong>PostgreSQL</strong></td>
+<td>15+</td>
+</tr>
+<tr>
+<td>テスト</td>
+<td><strong>Vitest</strong></td>
+<td>3.2.x</td>
+</tr>
+<tr>
+<td>コンテナ</td>
+<td><strong>Docker</strong></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td>Docker Compose</td>
+<td></td>
+</tr>
+<tr>
+<td>テキスト分析</td>
+<td><strong>Kuromoji.js</strong></td>
+<td>0.1.x</td>
+</tr>
+</tbody>
+</table>
+<h2 id="🚀-クイックスタート" class="tsd-anchor-link">🚀 クイックスタート<a href="#🚀-クイックスタート" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h2><h3 id="前提条件" class="tsd-anchor-link">前提条件<a href="#前提条件" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h3><ul>
+<li>Node.js 20+</li>
+<li>pnpm 9+</li>
+<li>Docker &amp; Docker Compose</li>
+</ul>
+<h3 id="docker-composeでの起動" class="tsd-anchor-link">Docker Composeでの起動<a href="#docker-composeでの起動" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h3><pre><code class="bash"><span class="hl-0"># 1. 依存関係をインストール</span><br/><span class="hl-1">pnpm</span><span class="hl-2"> </span><span class="hl-3">install</span><br/><br/><span class="hl-0"># 2. Dockerコンテナを起動</span><br/><span class="hl-1">pnpm</span><span class="hl-2"> </span><span class="hl-3">run</span><span class="hl-2"> </span><span class="hl-3">docker:up</span><br/><br/><span class="hl-0"># 3. コード生成とマイグレーションを実行</span><br/><span class="hl-1">pnpm</span><span class="hl-2"> </span><span class="hl-3">run</span><span class="hl-2"> </span><span class="hl-3">prebuild</span><br/><span class="hl-1">pnpm</span><span class="hl-2"> </span><span class="hl-3">run</span><span class="hl-2"> </span><span class="hl-3">db:push</span><br/><span class="hl-1">pnpm</span><span class="hl-2"> </span><span class="hl-3">run</span><span class="hl-2"> </span><span class="hl-3">build</span><br/><br/><span class="hl-0"># 4. 動作確認</span><br/><span class="hl-1">curl</span><span class="hl-2"> </span><span class="hl-3">http://localhost:3000/api/health</span>
+</code><button type="button">Copy</button></pre>
+
+<h2 id="📡-apiエンドポイント" class="tsd-anchor-link">📡 APIエンドポイント<a href="#📡-apiエンドポイント" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h2><table>
+<thead>
+<tr>
+<th style="text-align:left">Method</th>
+<th style="text-align:left">Endpoint</th>
+<th style="text-align:left">説明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><code>GET</code></td>
+<td style="text-align:left"><code>/api/health</code></td>
+<td style="text-align:left">ヘルスチェック</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>GET</code></td>
+<td style="text-align:left"><code>/api/influencers/{influencerId}/stats</code></td>
+<td style="text-align:left">特定インフルエンサーの統計情報</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>GET</code></td>
+<td style="text-align:left"><code>/api/influencers/top/likes?limit=10</code></td>
+<td style="text-align:left">いいね数ランキング（limit: 1-100）</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>GET</code></td>
+<td style="text-align:left"><code>/api/influencers/top/comments?limit=10</code></td>
+<td style="text-align:left">コメント数ランキング（limit: 1-100）</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>GET</code></td>
+<td style="text-align:left"><code>/api/influencers/{influencerId}/nouns?limit=10</code></td>
+<td style="text-align:left">投稿の名詞分析結果（limit: 1-100）</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>POST</code></td>
+<td style="text-align:left"><code>/api/import/csv</code></td>
+<td style="text-align:left">CSVファイルによるデータインポート（multipart/form-data, フィールド名: csvFile, 最大50MB）</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>GET</code></td>
+<td style="text-align:left"><code>/api/import/status</code></td>
+<td style="text-align:left">インポート機能のステータス確認</td>
+</tr>
+</tbody>
+</table>
+<h3 id="使用例" class="tsd-anchor-link">使用例<a href="#使用例" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h3><pre><code class="bash"><span class="hl-0"># いいね数トップ3を取得</span><br/><span class="hl-1">curl</span><span class="hl-2"> </span><span class="hl-3">&quot;http://localhost:3000/api/influencers/top/likes?limit=3&quot;</span><br/><br/><span class="hl-0"># コメント数トップ5を取得</span><br/><span class="hl-1">curl</span><span class="hl-2"> </span><span class="hl-3">&quot;http://localhost:3000/api/influencers/top/comments?limit=5&quot;</span><br/><br/><span class="hl-0"># 特定インフルエンサーの統計情報を取得</span><br/><span class="hl-1">curl</span><span class="hl-2"> </span><span class="hl-3">&quot;http://localhost:3000/api/influencers/1/stats&quot;</span><br/><br/><span class="hl-0"># 特定インフルエンサーの名詞分析（上位10件）</span><br/><span class="hl-1">curl</span><span class="hl-2"> </span><span class="hl-3">&quot;http://localhost:3000/api/influencers/1/nouns?limit=10&quot;</span><br/><br/><span class="hl-0"># CSVファイルをインポート（サンプルデータ）</span><br/><span class="hl-1">curl</span><span class="hl-2"> </span><span class="hl-4">-X</span><span class="hl-2"> </span><span class="hl-3">POST</span><span class="hl-2"> </span><span class="hl-4">-F</span><span class="hl-2"> </span><span class="hl-3">&quot;csvFile=@./data/t_influencer_posts_202401121334.csv&quot;</span><span class="hl-2"> </span><span class="hl-3">http://localhost:3000/api/import/csv</span><br/><br/><span class="hl-0"># インポートステータス確認</span><br/><span class="hl-1">curl</span><span class="hl-2"> </span><span class="hl-3">http://localhost:3000/api/import/status</span>
+</code><button type="button">Copy</button></pre>
+
+<h2 id="🔄-開発ワークフロー" class="tsd-anchor-link">🔄 開発ワークフロー<a href="#🔄-開発ワークフロー" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h2><h3 id="利用可能なスクリプト" class="tsd-anchor-link">利用可能なスクリプト<a href="#利用可能なスクリプト" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h3><table>
+<thead>
+<tr>
+<th style="text-align:left">コマンド</th>
+<th style="text-align:left">説明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><code>pnpm run dev</code></td>
+<td style="text-align:left">開発サーバーを起動 (Vite)</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>pnpm run build</code></td>
+<td style="text-align:left">プロダクション用にビルド</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>pnpm test</code></td>
+<td style="text-align:left">Vitestによるテストを実行</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>pnpm run lint</code></td>
+<td style="text-align:left">ESLintによる静的解析を実行</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>pnpm run format</code></td>
+<td style="text-align:left">Prettierによるコードフォーマット</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>pnpm run api:build</code></td>
+<td style="text-align:left">TypeSpecからAPI関連コードを生成</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>pnpm run db:migrate</code></td>
+<td style="text-align:left">Prismaでデータベースマイグレーションを実行</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>pnpm run db:studio</code></td>
+<td style="text-align:left">Prisma Studioを起動</td>
+</tr>
+</tbody>
+</table>
+<h3 id="typespec--prisma-駆動開発" class="tsd-anchor-link">TypeSpec + Prisma 駆動開発<a href="#typespec--prisma-駆動開発" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h3><ol>
+<li><strong>スキーマ更新</strong>: <code>schemas/main.tsp</code> を編集します。</li>
+<li><strong>コード生成</strong>: <code>pnpm run api:build</code> を実行し、型定義やサーバーの雛形を生成します。</li>
+<li><strong>実装</strong>: 生成されたファイルを元に、ビジネスロジックを実装します。</li>
+<li><strong>DBスキーマ更新</strong>: <code>prisma/schema.prisma</code> を編集します。</li>
+<li><strong>マイグレーション</strong>: <code>pnpm run db:migrate</code> を実行してDBスキーマを更新します。</li>
+</ol>
+<h2 id="📁-プロジェクト構造" class="tsd-anchor-link">📁 プロジェクト構造<a href="#📁-プロジェクト構造" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h2><pre><code><span class="hl-2">.</span><br/><span class="hl-2">├── </span><span class="hl-5">schemas</span><span class="hl-2">/          # </span><span class="hl-5">TypeSpecスキーマ定義</span><br/><span class="hl-2">├── </span><span class="hl-5">prisma</span><span class="hl-2">/           # </span><span class="hl-5">Prismaスキーマ</span><span class="hl-2">、</span><span class="hl-5">マイグレーション</span><br/><span class="hl-2">├── </span><span class="hl-5">generated</span><span class="hl-2">/        # </span><span class="hl-1">自動生成されたコード</span><span class="hl-2"> (</span><span class="hl-5">型定義など</span><span class="hl-2">)</span><br/><span class="hl-2">├── </span><span class="hl-5">src</span><span class="hl-2">/              # </span><span class="hl-1">TypeScriptソースコード</span><span class="hl-2"> (</span><span class="hl-5">Onion</span><span class="hl-2"> </span><span class="hl-5">Architecture</span><span class="hl-2">)</span><br/><span class="hl-2">│   ├── </span><span class="hl-5">app</span><span class="hl-2">.</span><span class="hl-5">ts</span><span class="hl-2">        # </span><span class="hl-5">エントリーポイント</span><span class="hl-2">、</span><span class="hl-5">DIコンテナ</span><br/><span class="hl-2">│   ├── </span><span class="hl-5">presentation</span><span class="hl-2">/ # </span><span class="hl-1">プレゼンテーション層</span><span class="hl-2"> (</span><span class="hl-5">Controller</span><span class="hl-2">, </span><span class="hl-5">Routes</span><span class="hl-2">)</span><br/><span class="hl-2">│   ├── </span><span class="hl-5">application</span><span class="hl-2">/  # </span><span class="hl-1">アプリケーション層</span><span class="hl-2"> (</span><span class="hl-5">Service</span><span class="hl-2">, </span><span class="hl-5">Usecase</span><span class="hl-2">)</span><br/><span class="hl-2">│   ├── </span><span class="hl-5">domain</span><span class="hl-2">/       # </span><span class="hl-1">ドメイン層</span><span class="hl-2"> (</span><span class="hl-5">Entity</span><span class="hl-2">, </span><span class="hl-5">Repository</span><span class="hl-2"> </span><span class="hl-5">Interface</span><span class="hl-2">)</span><br/><span class="hl-2">│   └── </span><span class="hl-5">infrastructure</span><span class="hl-2">/ # </span><span class="hl-1">インフラストラクチャ層</span><span class="hl-2"> (</span><span class="hl-5">DB実装</span><span class="hl-2">, </span><span class="hl-5">外部API</span><span class="hl-2">)</span><br/><span class="hl-2">├── </span><span class="hl-5">tests</span><span class="hl-2">/            # </span><span class="hl-5">テストコード</span><br/><span class="hl-2">├── </span><span class="hl-5">data</span><span class="hl-2">/             # </span><span class="hl-5">サンプルデータ</span><br/><span class="hl-2">├── </span><span class="hl-5">docs</span><span class="hl-2">/             # </span><span class="hl-5">ドキュメント静的サイト出力</span><span class="hl-2">（</span><span class="hl-5">mkdocs</span><span class="hl-2">, </span><span class="hl-5">sphinx</span><span class="hl-2">, </span><span class="hl-5">typedoc等</span><span class="hl-2">）</span><br/><span class="hl-2">└── ...               # </span><span class="hl-1">設定ファイル</span><span class="hl-2"> (</span><span class="hl-5">package</span><span class="hl-2">.</span><span class="hl-5">json</span><span class="hl-2">, </span><span class="hl-5">tsconfig</span><span class="hl-2">.</span><span class="hl-5">jsonなど</span><span class="hl-2">)</span><br/><span class="hl-2">├── </span><span class="hl-5">tsp</span><span class="hl-2">-</span><span class="hl-5">output</span><span class="hl-2">/       # </span><span class="hl-5">TypeSpecのOpenAPI等自動生成物</span>
+</code><button>Copy</button></pre>
+
+<h2 id="🌍-環境変数" class="tsd-anchor-link">🌍 環境変数<a href="#🌍-環境変数" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h2><p>プロジェクトルートの <code>.env</code> ファイルで設定します。<code>.env.example</code> を参考にしてください。</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">変数名</th>
+<th style="text-align:left">説明</th>
+<th style="text-align:left">必須</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><code>DATABASE_URL</code></td>
+<td style="text-align:left">PostgreSQL接続文字列</td>
+<td style="text-align:left">✅</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>PORT</code></td>
+<td style="text-align:left">APIサーバーがリッスンするポート</td>
+<td style="text-align:left"></td>
+</tr>
+<tr>
+<td style="text-align:left"><code>NODE_ENV</code></td>
+<td style="text-align:left">実行環境 (<code>development</code> or <code>production</code>)</td>
+<td style="text-align:left"></td>
+</tr>
+</tbody>
+</table>
+<h2 id="💡-github運用ガイド" class="tsd-anchor-link">💡 GitHub運用ガイド<a href="#💡-github運用ガイド" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h2><ul>
+<li>プルリクエスト（Pull Request）ベースで開発・レビュー推奨</li>
+<li>Issueでタスク・バグ管理</li>
+<li>コミットメッセージは簡潔かつ内容が分かるように記述</li>
+<li><code>.gitignore</code> で不要ファイルは除外</li>
+<li>mainブランチは常にデプロイ可能な状態を維持</li>
+</ul>
+<h2 id="📝-補足" class="tsd-anchor-link">📝 補足<a href="#📝-補足" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h2><ul>
+<li><code>tsp-output/</code> や <code>site/</code> などの自動生成物はgit管理外です</li>
+<li>Python仮想環境（.venv/）は各自作成し、git管理しません</li>
+<li>依存バージョンやコマンドは <code>package.json</code> などで随時確認してください</li>
+</ul>
+<h2 id="📑-csvインポート仕様" class="tsd-anchor-link">📑 CSVインポート仕様<a href="#📑-csvインポート仕様" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h2><ul>
+<li>エンドポイント: <code>POST /api/import/csv</code>（multipart/form-data, フィールド名: csvFile, 最大50MB）</li>
+<li>必須カラム: <code>influencer_id</code>, <code>post_id</code>, <code>likes</code>, <code>comments</code></li>
+<li>任意カラム: <code>shortcode</code>, <code>thumbnail</code>, <code>text</code>, <code>post_date</code></li>
+<li>既存post_idはスキップ（重複登録なし）</li>
+<li>インポート結果は件数・エラー数等をJSONで返却</li>
+</ul>
+</div></div><div class="col-sidebar"><div class="page-menu"><div class="tsd-navigation settings"><details class="tsd-accordion"><summary class="tsd-accordion-summary"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="assets/icons.svg#icon-chevronDown"></use></svg><h3>Settings</h3></summary><div class="tsd-accordion-details"><div class="tsd-filter-visibility"><span class="settings-label">Member Visibility</span><ul id="tsd-filter-options"><li class="tsd-filter-item"><label class="tsd-filter-input"><input type="checkbox" id="tsd-filter-inherited" name="inherited" checked/><svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><rect class="tsd-checkbox-background" width="30" height="30" x="1" y="1" rx="6" fill="none"></rect><path class="tsd-checkbox-checkmark" d="M8.35422 16.8214L13.2143 21.75L24.6458 10.25" stroke="none" stroke-width="3.5" stroke-linejoin="round" fill="none"></path></svg><span>Inherited</span></label></li><li class="tsd-filter-item"><label class="tsd-filter-input"><input type="checkbox" id="tsd-filter-external" name="external"/><svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><rect class="tsd-checkbox-background" width="30" height="30" x="1" y="1" rx="6" fill="none"></rect><path class="tsd-checkbox-checkmark" d="M8.35422 16.8214L13.2143 21.75L24.6458 10.25" stroke="none" stroke-width="3.5" stroke-linejoin="round" fill="none"></path></svg><span>External</span></label></li></ul></div><div class="tsd-theme-toggle"><label class="settings-label" for="tsd-theme">Theme</label><select id="tsd-theme"><option value="os">OS</option><option value="light">Light</option><option value="dark">Dark</option></select></div></div></details></div><details open class="tsd-accordion tsd-page-navigation"><summary class="tsd-accordion-summary"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="assets/icons.svg#icon-chevronDown"></use></svg><h3>On This Page</h3></summary><div class="tsd-accordion-details"><a href="#🚀-influencer-posts-analysis-api"><span>🚀 <wbr/>Influencer <wbr/>Posts <wbr/>Analysis <wbr/>API</span></a><ul><li><a href="#🌟-特徴"><span>🌟 特徴</span></a></li><li><a href="#🏗️-技術スタック"><span>🏗️ 技術スタック</span></a></li><li><a href="#🚀-クイックスタート"><span>🚀 クイックスタート</span></a></li><li><ul><li><a href="#前提条件"><span>前提条件</span></a></li><li><a href="#docker-composeでの起動"><span>Docker <wbr/>Composeでの起動</span></a></li></ul></li><li><a href="#📡-apiエンドポイント"><span>📡 <wbr/>APIエンドポイント</span></a></li><li><ul><li><a href="#使用例"><span>使用例</span></a></li></ul></li><li><a href="#🔄-開発ワークフロー"><span>🔄 開発ワークフロー</span></a></li><li><ul><li><a href="#利用可能なスクリプト"><span>利用可能なスクリプト</span></a></li><li><a href="#typespec--prisma-駆動開発"><span>Type<wbr/>Spec + <wbr/>Prisma 駆動開発</span></a></li></ul></li><li><a href="#📁-プロジェクト構造"><span>📁 プロジェクト構造</span></a></li><li><a href="#🌍-環境変数"><span>🌍 環境変数</span></a></li><li><a href="#💡-github運用ガイド"><span>💡 <wbr/>Git<wbr/>Hub運用ガイド</span></a></li><li><a href="#📝-補足"><span>📝 補足</span></a></li><li><a href="#📑-csvインポート仕様"><span>📑 <wbr/>CSVインポート仕様</span></a></li></ul></div></details></div><div class="site-menu"><nav class="tsd-navigation"><a href="modules.html">Influencer API Documentation</a><ul class="tsd-small-nested-navigation" id="tsd-nav-container"><li>Loading...</li></ul></nav></div></div></div><footer><p class="tsd-generator">Generated using <a href="https://typedoc.org/" target="_blank">TypeDoc</a></p></footer><div class="overlay"></div></body></html>
