@@ -3,6 +3,16 @@ import { PrismaInfluencerPostRepository } from '../src/infrastructure/prisma-inf
 import { mockDeep, DeepMockProxy } from 'vitest-mock-extended';
 import { PrismaClient, Prisma } from '@prisma/client';
 
+// 統計情報取得や上位インフルエンサー取得のgroupBy結果の型
+type GroupByResult = {
+  influencerId: number;
+  _avg: {
+    likes?: number | null;
+    comments?: number | null;
+  };
+  _count: number;
+};
+
 const LIMIT_INCLUDING_NULL_COMMENTS = 2;
 
 // PrismaInfluencerPostRepositoryの単体テスト
@@ -74,15 +84,22 @@ describe('PrismaInfluencerPostRepository', () => {
     );
 
     // グループ化・集計のモック
-    (prismaMock.influencerPost.groupBy as any).mockImplementation(
+    type GroupByMock = {
+      mockImplementation: (
+        fn: (args: Prisma.InfluencerPostGroupByArgs) => Promise<GroupByResult[]>
+      ) => void;
+    };
+    (
+      prismaMock.influencerPost.groupBy as unknown as GroupByMock
+    ).mockImplementation(
       ({ by, orderBy, take }: Prisma.InfluencerPostGroupByArgs) => {
         let result;
         if (
           by &&
           by.includes('influencerId') &&
           orderBy &&
-          (orderBy as any)._avg &&
-          (orderBy as any)._avg.comments === 'desc' &&
+          (orderBy as Prisma.InfluencerPostOrderByWithAggregationInput)._avg
+            ?.comments === 'desc' &&
           take === 2
         ) {
           result = [
@@ -98,7 +115,7 @@ describe('PrismaInfluencerPostRepository', () => {
             { influencerId: 1, _avg: { likes: 10, comments: 2 }, _count: 1 },
           ];
         }
-        return result as any;
+        return Promise.resolve(result);
       }
     );
 
