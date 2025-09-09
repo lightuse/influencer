@@ -17,10 +17,7 @@ runs:
     - name: Add .venv/bin to PATH
       run: echo "${GITHUB_WORKSPACE}/.venv/bin" >> $GITHUB_PATH
       shell: bash
-    - name: Clean Sphinx output directory
-      run: rm -rf "${GITHUB_WORKSPACE}/mkdocs_content/sphinx/*"
-      shell: bash
     - name: Build Sphinx Docs
-      run: sphinx-build -b html . "${GITHUB_WORKSPACE}/mkdocs_content/sphinx/"
+      run: sphinx-build -b html . "${GITHUB_WORKSPACE}/docs/mkdocs_content/sphinx/"
       shell: bash
       working-directory: ${{ inputs.working-directory }}
