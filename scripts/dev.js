@@ -14,6 +14,11 @@ import { resolve } from 'path';
 import fs from 'fs';
 import { join } from 'path';
 
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = resolve(__filename, '..');
+
 // サーバープロセスを保持する変数
 let serverProcess = null;
 
