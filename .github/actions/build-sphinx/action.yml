@@ -15,10 +15,10 @@ runs:
   using: 'composite'
   steps:
     - name: Install Sphinx Python dependencies
-      run: pip install -r ${{ inputs.requirements-file }}
+      run: uv pip install -r ${{ inputs.requirements-file }}
       shell: bash
       working-directory: ${{ inputs.working-directory }}
     - name: Build Sphinx Docs
-      run: sphinx-build -b html . _build/html
+      run: sphinx-build -b html docs/sphinx/ docs/mkdocs_content/sphinx/
       shell: bash
       working-directory: ${{ inputs.working-directory }}

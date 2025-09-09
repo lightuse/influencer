@@ -30,7 +30,7 @@ runs:
 
     - name: Install Node.js dependencies
       shell: bash
-      run: pnpm install --no-frozen-lockfile
+      run: pnpm install
       working-directory: ${{ inputs.working-directory }}
 
     - name: Generate Typedoc
