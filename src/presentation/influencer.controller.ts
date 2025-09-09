@@ -1,6 +1,12 @@
 import { Request, Response } from 'express';
 import { InfluencerService } from '../application/influencer.service.js';
-import { TopInfluencer } from '../domain/entities.js';
+import { components } from '../../generated/api-types.js';
+import { TopInfluencer as DomainTopInfluencer } from '../domain/entities.js';
+
+type InfluencerStatsResponse = components['schemas']['InfluencerStats'];
+type TopInfluencersResponse = components['schemas']['TopInfluencersResponse'];
+type NounAnalysisResultResponse = components['schemas']['NounAnalysisResult'];
+type TopInfluencerResponse = components['schemas']['TopInfluencer'];
 
 /**
  * インフルエンサー関連APIコントローラー。
@@ -8,9 +14,39 @@ import { TopInfluencer } from '../domain/entities.js';
  */
 export class InfluencerController {
   /**
+   * ドメインモデルからレスポンスモデルへの変換ヘルパー。
+   */
+  private static toTopInfluencerResponse(
+    influencer: DomainTopInfluencer
+  ): TopInfluencerResponse {
+    return {
+      influencer_id: influencer.influencerId,
+      avg_likes:
+        influencer.avgLikes !== undefined
+          ? String(influencer.avgLikes)
+          : undefined,
+      avg_comments:
+        influencer.avgComments !== undefined
+          ? String(influencer.avgComments)
+          : undefined,
+      post_count: influencer.postCount,
+    };
+  }
+  /**
    * limitクエリパラメータをパースし、1～100の範囲でバリデーションする共通ヘルパー。
    * @param req Expressリクエスト
    * @returns 有効なlimit値（デフォルト10）、不正な場合はnull
+   * @remarks
+   * クエリパラメータは文字列として渡されるため、整数に変換してから範囲チェックを行います。
+   * 1未満または100超の値、数値でない場合はnullを返します。
+   * デフォルト値は10です。
+   * このメソッドはgetTopInfluencersByLikes、getTopInfluencersByComments、
+   * getTopNounsの3つのエンドポイントで共通して使用されます。
+   * これにより、各エンドポイントで同じバリデーションロジックを繰り返す必要がなくなり、
+   * コードの重複を防ぎます。
+   * また、将来的にバリデーションルールを変更する場合も、このメソッドだけ修正すればよく、
+   * 保守性が向上します。
+   * @returns {number | null} 有効なlimit値（デフォルト10）、不正な場合はnull
    */
   private static parseAndValidateLimit(req: Request): number | null {
     const parsedLimit = parseInt(req.query.limit as string);
@@ -30,6 +66,7 @@ export class InfluencerController {
    * インフルエンサー統計情報取得API。
    * @param req Expressリクエスト
    * @param res Expressレスポンス
+   * @returns void
    */
   async getInfluencerStats(req: Request, res: Response): Promise<void> {
     try {
@@ -54,12 +91,14 @@ export class InfluencerController {
         return;
       }
 
-      res.json({
+      const response: InfluencerStatsResponse = {
         influencer_id: stats.influencerId,
-        avg_likes: stats.avgLikes,
-        avg_comments: stats.avgComments,
+        avg_likes: String(stats.avgLikes),
+        avg_comments: String(stats.avgComments),
         post_count: stats.postCount,
-      });
+      };
+
+      res.json(response);
     } catch (error) {
       res.status(500).json({
         error: 'Internal server error',
@@ -72,6 +111,7 @@ export class InfluencerController {
    * いいね数ランキング取得API。
    * @param req Expressリクエスト
    * @param res Expressレスポンス
+   * @returns void
    */
   async getTopInfluencersByLikes(req: Request, res: Response): Promise<void> {
     try {
@@ -86,14 +126,12 @@ export class InfluencerController {
 
       const results =
         await this.influencerService.getTopInfluencersByLikes(limit);
-      res.json({
+
+      const response: TopInfluencersResponse = {
         limit,
-        results: results.map((r: TopInfluencer) => ({
-          influencer_id: r.influencerId,
-          avg_likes: r.avgLikes,
-          post_count: r.postCount,
-        })),
-      });
+        results: results.map(InfluencerController.toTopInfluencerResponse),
+      };
+      res.json(response);
     } catch (error) {
       res.status(500).json({
         error: 'Internal server error',
@@ -106,7 +144,7 @@ export class InfluencerController {
    * コメント数ランキング取得API。
    * @param req Expressリクエスト
    * @param res Expressレスポンス
-   * @returns Promise<void> - Returns a Promise that resolves when the response is sent.
+   * @returns void
    */
   async getTopInfluencersByComments(
     req: Request,
@@ -124,14 +162,12 @@ export class InfluencerController {
 
       const results =
         await this.influencerService.getTopInfluencersByComments(limit);
-      res.json({
+
+      const response: TopInfluencersResponse = {
         limit,
-        results: results.map((r: TopInfluencer) => ({
-          influencer_id: r.influencerId,
-          avg_comments: r.avgComments,
-          post_count: r.postCount,
-        })),
-      });
+        results: results.map(InfluencerController.toTopInfluencerResponse),
+      };
+      res.json(response);
     } catch (error) {
       res.status(500).json({
         error: 'Internal server error',
@@ -184,11 +220,13 @@ export class InfluencerController {
         return;
       }
 
-      res.json({
+      const response: NounAnalysisResultResponse = {
         influencer_id: result.influencerId,
         total_posts: result.totalPosts,
         nouns: result.nouns,
-      });
+      };
+
+      res.json(response);
     } catch (error) {
       res.status(500).json({
         error: 'Internal server error',
