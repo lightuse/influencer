@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { PrismaInfluencerPostRepository } from '../src/infrastructure/prisma-influencer-post.repository.js';
 import { mockDeep, DeepMockProxy } from 'vitest-mock-extended';
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, Prisma } from '@prisma/client';
 
 const LIMIT_INCLUDING_NULL_COMMENTS = 2;
 
@@ -14,56 +14,64 @@ describe('PrismaInfluencerPostRepository', () => {
     prismaMock = mockDeep<PrismaClient>();
 
     // 投稿作成のモック
-    prismaMock.influencerPost.create.mockImplementation(({ data }: any) => {
-      return {
-        ...data,
-        id: 1,
-        createdAt: new Date(),
-      } as unknown as ReturnType<typeof prismaMock.influencerPost.create>;
-    });
+    prismaMock.influencerPost.create.mockImplementation(
+      (args: Prisma.InfluencerPostCreateArgs) => {
+        return {
+          ...args.data,
+          id: 1,
+          createdAt: new Date(),
+        } as unknown as ReturnType<typeof prismaMock.influencerPost.create>;
+      }
+    );
 
     // influencerIdで投稿を検索するモック
-    prismaMock.influencerPost.findMany.mockImplementation(({ where }: any) => {
-      const result =
-        where && where.influencerId
-          ? [
-              {
-                id: 1,
-                influencerId: where.influencerId,
-                postId: '1',
-                shortcode: null,
-                likes: 10,
-                comments: 2,
-                thumbnail: null,
-                text: null,
-                postDate: new Date(),
-                createdAt: new Date(),
-              },
-            ]
-          : [];
-      return result as unknown as ReturnType<
-        typeof prismaMock.influencerPost.findMany
-      >;
-    });
+    prismaMock.influencerPost.findMany.mockImplementation(
+      (args?: Prisma.InfluencerPostFindManyArgs) => {
+        const where: Prisma.InfluencerPostWhereInput | undefined = args?.where;
+        const result =
+          where && typeof where.influencerId === 'number'
+            ? [
+                {
+                  id: 1,
+                  influencerId: where.influencerId,
+                  postId: '1',
+                  shortcode: null,
+                  likes: 10,
+                  comments: 2,
+                  thumbnail: null,
+                  text: null,
+                  postDate: new Date(),
+                  createdAt: new Date(),
+                },
+              ]
+            : [];
+        return result as unknown as ReturnType<
+          typeof prismaMock.influencerPost.findMany
+        >;
+      }
+    );
 
     // 統計情報取得のモック
-    prismaMock.influencerPost.aggregate.mockImplementation(({ where }: any) => {
-      let result;
-      if (where && where.influencerId === 1) {
-        result = {
-          _avg: {
-            likes: { toNumber: () => 10 },
-            comments: { toNumber: () => 2 },
-          },
-          _count: 1,
-        };
-      } else {
-        result = { _avg: { likes: 0, comments: 0 }, _count: 0 };
+    prismaMock.influencerPost.aggregate.mockImplementation(
+      (args: Prisma.InfluencerPostAggregateArgs) => {
+        const where: Prisma.InfluencerPostWhereInput | undefined = args.where;
+        let result;
+        if (where && where.influencerId === 1) {
+          result = {
+            _avg: {
+              likes: { toNumber: () => 10 },
+              comments: { toNumber: () => 2 },
+            },
+            _count: 1,
+          };
+        } else {
+          result = { _avg: { likes: 0, comments: 0 }, _count: 0 };
+        }
+        return result as unknown as ReturnType<
+          typeof prismaMock.influencerPost.aggregate
+        >;
       }
-      return result as unknown as ReturnType<
-        typeof prismaMock.influencerPost.aggregate
-      >;
-    });
+    );
 
     // グループ化・集計のモック
     Object.defineProperty(prismaMock.influencerPost, 'groupBy', {
@@ -97,15 +105,19 @@ describe('PrismaInfluencerPostRepository', () => {
     });
 
     // 複数投稿作成のモック
-    prismaMock.influencerPost.createMany.mockImplementation(({ data }: any) => {
-      return { count: data.length } as unknown as ReturnType<
-        typeof prismaMock.influencerPost.createMany
-      >;
-    });
+    prismaMock.influencerPost.createMany.mockImplementation(
+      (args?: Prisma.InfluencerPostCreateManyArgs) => {
+        return {
+          count: args && Array.isArray(args.data) ? args.data.length : 0,
+        } as unknown as ReturnType<typeof prismaMock.influencerPost.createMany>;
+      }
+    );
 
     // 投稿IDでユニーク検索のモック
     prismaMock.influencerPost.findUnique.mockImplementation(
-      ({ where }: any) => {
+      (args: Prisma.InfluencerPostFindUniqueArgs) => {
+        const where: Prisma.InfluencerPostWhereUniqueInput | undefined =
+          args.where;
         const result =
           where && where.postId === '1'
             ? {
