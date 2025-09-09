@@ -33,7 +33,7 @@ nav:
   - Home: index.md
   - ドキュメントビルド手順: build_procedure.md
   - APIドキュメント: typedoc/
-  - Sphinx Docs: sphinx/
+  - 想定されるAPIの利用用途: sphinx/
 
 plugins:
   - awesome-pages

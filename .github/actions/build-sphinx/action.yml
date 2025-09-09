@@ -18,4 +18,3 @@ runs:
         source "${GITHUB_WORKSPACE}/.venv/bin/activate"
         sphinx-build -b html . "${GITHUB_WORKSPACE}/mkdocs_content/sphinx/"
       shell: bash
-      working-directory: ${{ inputs.working-directory }}
