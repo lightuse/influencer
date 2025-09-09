@@ -84,14 +84,8 @@ describe('PrismaInfluencerPostRepository', () => {
     );
 
     // グループ化・集計のモック
-    type GroupByMock = {
-      mockImplementation: (
-        fn: (args: Prisma.InfluencerPostGroupByArgs) => Promise<GroupByResult[]>
-      ) => void;
-    };
-    (
-      prismaMock.influencerPost.groupBy as unknown as GroupByMock
-    ).mockImplementation(
+    // @ts-expect-error: vitest-mock-extended can't mock overloaded functions like groupBy
+    prismaMock.influencerPost.groupBy.mockImplementation(
       ({ by, orderBy, take }: Prisma.InfluencerPostGroupByArgs) => {
         let result;
         if (
