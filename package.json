@@ -35,6 +35,9 @@
     "lint:fix": "eslint . --ext .ts,.js --fix",
     "typecheck": "tsc --noEmit"
   },
+  "engines": {
+    "node": ">=20.0.0"
+  },
   "keywords": [
     "api",
     "influencer",

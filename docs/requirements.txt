@@ -1,0 +1,5 @@
+mkdocs
+mkdocs-material
+mkdocs-awesome-pages-plugin
+mkdocs-open-in-new-tab
+mkdocs-mermaid2-plugin

@@ -1,0 +1,23 @@
+name: 'Build Sphinx Documentation'
+description: 'Builds Sphinx documentation from a specified directory.'
+
+inputs:
+  working-directory:
+    description: 'Path to the working directory for Sphinx.'
+    required: false
+    default: 'docs/sphinx'
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Install Sphinx Python dependencies
+      run: uv pip install -r requirements.txt
+      shell: bash
+      working-directory: ${{ inputs.working-directory }}
+    - name: Add .venv/bin to PATH
+      run: echo "${GITHUB_WORKSPACE}/.venv/bin" >> $GITHUB_PATH
+      shell: bash
+    - name: Build Sphinx Docs
+      run: sphinx-build -b html . "${GITHUB_WORKSPACE}/docs/mkdocs_content/sphinx/"
+      shell: bash
+      working-directory: ${{ inputs.working-directory }}
