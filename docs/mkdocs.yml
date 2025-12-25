@@ -1,0 +1,49 @@
+site_name: Influencer Documentation
+
+docs_dir: mkdocs_content
+
+theme:
+  name: material
+  language: ja
+  font:
+    text: Noto Sans
+    code: Inconsolata
+  features:
+    - navigation.instant
+    - navigation.instant.progress
+    - navigation.expand
+    - navigation.top
+    - navigation.tabs
+    - navigation.path
+
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.tabbed:
+      alternate_style: true
+  - attr_list
+  - md_in_html
+
+nav:
+  - Home: index.md
+  - ドキュメントビルド手順: build_procedure.md
+  - APIドキュメント: typedoc/
+  - 想定されるAPIの利用用途: sphinx/
+
+plugins:
+  - awesome-pages
+  - open-in-new-tab
+  - mermaid2:
+      arguments:
+        theme: default
+        startOnLoad: true
+        flowchart:
+          useMaxWidth: true
+          htmlLabels: true
+        sequence:
+          useMaxWidth: true

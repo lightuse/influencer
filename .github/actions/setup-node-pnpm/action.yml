@@ -1,0 +1,45 @@
+name: 'Setup Node.js, pnpm, and Generate Typedoc'
+description: 'Sets up Node.js and pnpm, installs dependencies, and generates Typedoc documentation.'
+inputs:
+  node-version-file:
+    description: 'Path to package.json to determine Node.js version'
+    required: false
+    default: 'package.json'
+  working-directory:
+    description: 'Working directory for pnpm commands'
+    required: false
+    default: '.'
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version-file: ${{ inputs.node-version-file }}
+        cache: 'pnpm'
+
+    - name: Install Node.js dependencies
+      shell: bash
+      run: pnpm install
+      working-directory: ${{ inputs.working-directory }}
+
+    - name: Compile TypeSpec to OpenAPI
+      shell: bash
+      run: pnpm run typespec:compile
+      working-directory: ${{ inputs.working-directory }}
+
+    - name: Generate API Types
+      shell: bash
+      run: pnpm run api:types
+      working-directory: ${{ inputs.working-directory }}
+
+    - name: Generate Prisma Client
+      shell: bash
+      run: pnpm run db:generate
+      working-directory: ${{ inputs.working-directory }}
+
+    - name: Generate Typedoc
+      shell: bash
+      run: pnpm run docs
+      working-directory: ${{ inputs.working-directory }}
